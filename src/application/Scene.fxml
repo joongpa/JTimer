@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
+<VBox fx:id="root" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.MainController">
   <children>
     <MenuBar prefHeight="35.0" prefWidth="1280.0" VBox.vgrow="NEVER">
       <menus>
@@ -76,8 +76,8 @@
                <children>
                   <HBox alignment="CENTER_LEFT" prefHeight="44.0" prefWidth="434.0" spacing="10.0">
                      <children>
-                        <Button mnemonicParsing="false" text="Clear" />
-                        <Button mnemonicParsing="false" text="Delete" />
+                        <Button fx:id="clear" mnemonicParsing="false" onAction="#clear" text="Clear" />
+                        <Button fx:id="delete" mnemonicParsing="false" onAction="#delete" text="Delete" />
                         <Separator orientation="VERTICAL" prefHeight="200.0">
                            <padding>
                               <Insets left="10.0" right="10.0" />
@@ -101,7 +101,7 @@
                         <Font name="Segoe UI Semilight" size="40.0" />
                      </font>
                   </Label>
-                  <Label alignment="CENTER" text="16.93">
+                  <Label fx:id="timer" alignment="CENTER" text="16.93">
                      <font>
                         <Font name="Segoe UI Semilight" size="175.0" />
                      </font>

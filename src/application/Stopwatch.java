@@ -5,25 +5,34 @@ import java.text.DecimalFormat;
 public class Stopwatch {
 
 	private double startTime;
-	private double endTime;
 	private double time;
 	
+	public boolean isStopped;
+	
 	private DecimalFormat df = new DecimalFormat("#0.00");
+	
+	public Stopwatch()
+	{
+		startTime = 0;
+		time = 0;
+		isStopped = true;
+	}
 	
 	public void start()
 	{
 		startTime = System.currentTimeMillis();
+		isStopped = false;
 	}
 	
 	public void stop()
 	{
-		endTime = System.currentTimeMillis();
-		time = endTime - startTime;
+		time = getTime();
+		isStopped = true;
 	}
 	
 	public double getTime()
 	{
-		return time / 1000;
+		return isStopped ? time / 1000 : (System.currentTimeMillis() - startTime) / 1000;
 	}
 	
 	public String getTimeAsString()
