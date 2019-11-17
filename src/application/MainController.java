@@ -1,3 +1,14 @@
+/*
+ * To-do list:
+ * - Timer start delay
+ * - Change ListView to TableView
+ * - Style TableView to have no visible column separators
+ * - Style the solve number column to be a lighter text color for readability
+ * - Add functionality to OK, +2, and DNF buttons
+ * - Compute means and averages and display in the TableView
+ * - *Scramble generation*
+ * - 
+*/
 package application;
 
 import java.net.URL;
@@ -25,6 +36,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 public class MainController implements Initializable{
@@ -49,6 +61,8 @@ public class MainController implements Initializable{
 	private KeyCombination dnfCombo = new KeyCodeCombination(KeyCode.DIGIT3, KeyCodeCombination.CONTROL_DOWN);
 	
 	Stopwatch st = new Stopwatch();
+	Stopwatch delay = new Stopwatch();
+	private boolean ready = false;
 
 	@Override
 	
@@ -63,16 +77,24 @@ public class MainController implements Initializable{
 			if(spaceCombo.match(e))
 			{
 				count++;
+				if(count == 1) delay.start();
+				
 				if(st.inProgress) //when user presses spacebar to stop the timer
 				{
 					if(count == 1)
 					{
 						timeline.stop();
-						list.getItems().add((list.getItems().size() + 1) + " " + timerLabel.getText());
+						//the list stuff below will be replaced after tableView is added
+						list.getItems().add(timerLabel.getText());
 						list.getSelectionModel().select(list.getItems().size() - 1);
 					}
 				} else {
-					time.setValue("0.00");
+					if(delay.getTime() > 0.3)
+					{
+						time.setValue("0.00");
+						timerLabel.setTextFill(Color.web("#00DD00"));
+						ready = true;
+					}
 				}
 				e.consume();
 			}
@@ -82,16 +104,21 @@ public class MainController implements Initializable{
 		root.addEventFilter(KeyEvent.KEY_RELEASED, e -> {
 			if(spaceCombo.match(e)) 
 			{
+				timerLabel.setTextFill(Color.web("#000000"));
 				count = 0;
 				if(!st.inProgress) //When timer is inactive
 				{
-					st.start();
-					timeline = new Timeline(
-						new KeyFrame(Duration.millis(50), event -> { 
-							time.setValue(st.getTimeAsString());
-					}));
-					timeline.setCycleCount(Timeline.INDEFINITE);
-					timeline.play();
+					if(ready)
+					{
+						ready = false;
+						st.start();
+						timeline = new Timeline(
+							new KeyFrame(Duration.millis(50), event -> { 
+								time.setValue(st.getTimeAsString());
+						}));
+						timeline.setCycleCount(Timeline.INDEFINITE);
+						timeline.play();
+					}
 				} else {
 					st.inProgress = false;
 				}
@@ -105,6 +132,18 @@ public class MainController implements Initializable{
 		
 		root.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
 			if(deleteCombo.match(e)) delete();
+		});
+		
+		root.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+			if(okCombo.match(e)) ok();
+		});
+		
+		root.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+			if(plus2Combo.match(e)) plus2();
+		});
+		
+		root.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+			if(dnfCombo.match(e)) dnf();
 		});
 		
 	}
@@ -135,8 +174,13 @@ public class MainController implements Initializable{
 		
 	}
 	
-	public void plus2()
+	public void plus2() //not done yet
 	{
 		list.getItems().set(list.getSelectionModel().getSelectedIndex(), list.getItems().get(list.getSelectionModel().getSelectedIndex()) + " +2");
+	}
+	
+	public void dnf()
+	{
+		list.getItems().set(list.getSelectionModel().getSelectedIndex(), "DNF");
 	}
 }

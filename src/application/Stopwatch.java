@@ -3,7 +3,6 @@ package application;
 public class Stopwatch {
 
 	private double startTime;
-	
 	public boolean inProgress;
 	
 	public Stopwatch()
@@ -15,6 +14,11 @@ public class Stopwatch {
 	{
 		startTime = System.currentTimeMillis();
 		inProgress = true;
+	}
+	
+	public double getTime()
+	{
+		return (System.currentTimeMillis() - startTime) / 1000;
 	}
 	
 	public String getTimeAsString()
