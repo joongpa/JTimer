@@ -83,13 +83,28 @@
                               <Insets left="10.0" right="10.0" />
                            </padding>
                         </Separator>
-                        <Button mnemonicParsing="false" text="OK" />
-                        <Button mnemonicParsing="false" text="+2" />
-                        <Button mnemonicParsing="false" text="DNF" />
+                        <Button fx:id="ok" mnemonicParsing="false" text="OK" />
+                        <Button fx:id="plus2" mnemonicParsing="false" onAction="#plus2" text="+2" />
+                        <Button fx:id="dnf" mnemonicParsing="false" text="DNF" />
                      </children>
                      <padding>
                         <Insets bottom="10.0" />
                      </padding>
+                  </HBox>
+                  <HBox prefHeight="37.0" prefWidth="434.0" spacing="10.0">
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="21.0" text="#" />
+                        <Label prefHeight="17.0" prefWidth="93.0" text="Time" />
+                        <Label prefHeight="17.0" prefWidth="70.0" text="Mo3" />
+                        <Label prefWidth="70.0" text="Ao5" />
+                        <Label prefWidth="70.0" text="Ao12" />
+                     </children>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" />
+                     </padding>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
                   </HBox>
                   <ListView fx:id="list" prefHeight="637.0" prefWidth="434.0" />
                </children>
@@ -101,9 +116,9 @@
                         <Font name="Segoe UI Semilight" size="40.0" />
                      </font>
                   </Label>
-                  <Label fx:id="timer" alignment="CENTER" text="16.93">
+                  <Label fx:id="timerLabel" text="16.93">
                      <font>
-                        <Font name="Segoe UI Semilight" size="175.0" />
+                        <Font name="Monospaced Regular" size="175.0" />
                      </font>
                   </Label>
                   <TabPane prefHeight="142.0" prefWidth="797.0" tabClosingPolicy="UNAVAILABLE">

@@ -1,52 +1,36 @@
 package application;
 
-import java.text.DecimalFormat;
-
 public class Stopwatch {
 
 	private double startTime;
-	private double time;
 	
-	public boolean isStopped;
-	
-	private DecimalFormat df = new DecimalFormat("#0.00");
+	public boolean inProgress;
 	
 	public Stopwatch()
 	{
-		startTime = 0;
-		time = 0;
-		isStopped = true;
+		inProgress = false;
 	}
 	
 	public void start()
 	{
 		startTime = System.currentTimeMillis();
-		isStopped = false;
-	}
-	
-	public void stop()
-	{
-		time = getTime();
-		isStopped = true;
-	}
-	
-	public double getTime()
-	{
-		return isStopped ? time / 1000 : (System.currentTimeMillis() - startTime) / 1000;
+		inProgress = true;
 	}
 	
 	public String getTimeAsString()
 	{
-		double rawTime = getTime();
-		double rawHours = rawTime / 3600;
-		double rawMinutes = (rawHours % 1) * 60;
-		double seconds = (rawMinutes % 1) * 60;
+		return formatTime((System.currentTimeMillis() - startTime) / 1000);
+	}
+	
+	public static String formatTime(double time)
+	{
+		int hours = (int)(time / 3600);
+		int minutes = (int)(time % 3600 / 60);
+		double seconds = time % 60;
 		
-		int hours = (int)rawHours;
-		int minutes = (int)rawMinutes;
-		
-		if(hours > 0) return hours + ":" + minutes + ":" + df.format(seconds);
-		else if(minutes > 0) return minutes + ":" + df.format(seconds);
-		return df.format(seconds);
+		if(hours > 0) return String.format("%d:%02d:%05.2f", hours, minutes, seconds);
+		else if(minutes > 0) return String.format("%d:%05.2f", minutes, seconds);
+		else return String.format("%.2f", seconds);
+
 	}
 }
