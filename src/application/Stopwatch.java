@@ -28,6 +28,7 @@ public class Stopwatch {
 	
 	public static String formatTime(double time)
 	{
+		if(time < 0) return "";
 		int hours = (int)(time / 3600);
 		int minutes = (int)(time % 3600 / 60);
 		double seconds = time % 60;
@@ -35,6 +36,5 @@ public class Stopwatch {
 		if(hours > 0) return String.format("%d:%02d:%05.2f", hours, minutes, seconds);
 		else if(minutes > 0) return String.format("%d:%05.2f", minutes, seconds);
 		else return String.format("%.2f", seconds);
-
 	}
 }

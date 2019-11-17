@@ -32,6 +32,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -41,15 +44,14 @@ import javafx.util.Duration;
 
 public class MainController implements Initializable{
 	
-	@FXML
-	public Parent root;
-	
-	@FXML
-	public ListView<String> list;
-	public Label timerLabel;
+	@FXML private Parent root;
+	@FXML private Label timerLabel;
+	@FXML private TableView<Solve> timeList;
+	@FXML private TableColumn<Solve, Integer> solveNumber;
+	@FXML private TableColumn<Solve, String> displayedTime;
+	@FXML private TableColumn<Solve, String> mo3;
 
 	private Timeline timeline;
-	private StringProperty time = new SimpleStringProperty();
 	private int count;
 	
 	//hotkeys
@@ -65,12 +67,14 @@ public class MainController implements Initializable{
 	private boolean ready = false;
 
 	@Override
-	
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		
+		solveNumber.setCellValueFactory(new PropertyValueFactory<Solve, Integer>("solveNumber"));
+		displayedTime.setCellValueFactory(new PropertyValueFactory<Solve, String>("displayedTime"));
+		mo3.setCellValueFactory(new PropertyValueFactory<Solve, String>("mo3"));
+		
 		count = 0;
-		time.setValue("0.00");
-		timerLabel.textProperty().bind(time);
+		timerLabel.textProperty().set("0.00");
 		
 		//handles timer stops
 		root.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
@@ -83,15 +87,31 @@ public class MainController implements Initializable{
 				{
 					if(count == 1)
 					{
+						double finalTime = st.getTime();
 						timeline.stop();
-						//the list stuff below will be replaced after tableView is added
-						list.getItems().add(timerLabel.getText());
-						list.getSelectionModel().select(list.getItems().size() - 1);
+						timerLabel.textProperty().set(Stopwatch.formatTime(finalTime));
+						
+					/*	int size = timeList.getItems().size();
+						double mean;
+						try
+						{
+							double sum = 0;
+							for(int i = size - 1; i > size - 3; i--)
+							{
+								sum += timeList.getItems().get(i).getRealTime();
+							}
+							sum += finalTime;
+							mean = sum / 3;
+						} catch(IndexOutOfBoundsException error) {
+							mean = -1;
+						}*/ //basically wtf do I do to get live averages to work
+						timeList.getItems().add(new Solve(timeList.getItems().size() + 1, finalTime, mean));
+						timeList.getSelectionModel().select(timeList.getItems().size() - 1);
 					}
 				} else {
 					if(delay.getTime() > 0.3)
 					{
-						time.setValue("0.00");
+						timerLabel.textProperty().set("0.00");
 						timerLabel.setTextFill(Color.web("#00DD00"));
 						ready = true;
 					}
@@ -113,8 +133,8 @@ public class MainController implements Initializable{
 						ready = false;
 						st.start();
 						timeline = new Timeline(
-							new KeyFrame(Duration.millis(50), event -> { 
-								time.setValue(st.getTimeAsString());
+							new KeyFrame(Duration.millis(10), event -> { 
+								timerLabel.textProperty().set(st.getTimeAsString());
 						}));
 						timeline.setCycleCount(Timeline.INDEFINITE);
 						timeline.play();
@@ -150,22 +170,28 @@ public class MainController implements Initializable{
 	
 	public void clear()
 	{
-		list.getItems().clear();
+		timeList.getItems().clear();
 	}
 	
 	public void delete()
 	{
-		int selectedIndex = list.getSelectionModel().getSelectedIndex();
+		int selectedIndex = timeList.getSelectionModel().getSelectedIndex();
 		int newSelected;
 		if(selectedIndex != -1)
 		{
-			if(selectedIndex == list.getItems().size() - 1)
+			if(selectedIndex == timeList.getItems().size() - 1)
 			{
 				newSelected = selectedIndex - 1;
 			} else newSelected = selectedIndex;
 			
-			list.getItems().remove(selectedIndex);
-			list.getSelectionModel().select(newSelected);
+			timeList.getItems().remove(selectedIndex);
+			timeList.getSelectionModel().select(newSelected);
+			
+			for(int i = newSelected; i < timeList.getItems().size(); i++)
+			{
+				int currentNum = timeList.getItems().get(i).getSolveNumber();
+				timeList.getItems().get(i).setSolveNumber(currentNum - 1);
+			}
 		}
 	}
 	
@@ -174,13 +200,13 @@ public class MainController implements Initializable{
 		
 	}
 	
-	public void plus2() //not done yet
+	public void plus2()
 	{
-		list.getItems().set(list.getSelectionModel().getSelectedIndex(), list.getItems().get(list.getSelectionModel().getSelectedIndex()) + " +2");
+
 	}
 	
 	public void dnf()
 	{
-		list.getItems().set(list.getSelectionModel().getSelectedIndex(), "DNF");
+
 	}
 }
