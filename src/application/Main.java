@@ -15,6 +15,7 @@ public class Main extends Application {
 			Parent root = FXMLLoader.load(getClass().getResource("/application/Scene.fxml"));
 			Scene scene = new Scene(root,400,400);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			primaryStage.setTitle("Jtimer Pre-alpha");
 			primaryStage.setScene(scene);
 			primaryStage.show();
 			
