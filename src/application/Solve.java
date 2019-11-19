@@ -23,13 +23,18 @@ public class Solve implements Comparable<Solve> {
 		resetDisplay();
 		
 		solveStateProperty.addListener((o, oldval, newVal) -> {
-			switch(solveStateProperty.get())
+			if(oldval == SolveState.PLUS2) {
+				this.realTime.set(this.realTime.get() - 2);
+			}
+
+			switch(newVal)
 			{
 				case OK:
 					resetDisplay();
 					break;
 				case PLUS2:
-					displayedTime.set(Stopwatch.formatTime(realTime.doubleValue() + 2) + "+");
+					this.realTime.set(this.realTime.get() + 2);
+					displayedTime.set(Stopwatch.formatTime(this.realTime.get()) + "+");
 					break;
 				case DNF:
 					displayedTime.set("DNF");
@@ -71,13 +76,13 @@ public class Solve implements Comparable<Solve> {
 
 	@Override
 	public int compareTo(Solve o) {
-		if(solveStateProperty.get() == SolveState.DNF && o.solveStateProperty.get() == SolveState.DNF) return 0;
-		if(solveStateProperty.get() == SolveState.DNF) return Integer.MAX_VALUE;
-		if(o.solveStateProperty.get() == SolveState.DNF) return Integer.MIN_VALUE;
+		if(solveStateProperty.get() == SolveState.DNF) {
+			if(o.solveStateProperty.get() == SolveState.DNF)
+				return 0;
+			else return Integer.MAX_VALUE;
+		} else if(o.solveStateProperty.get() == SolveState.DNF) return Integer.MIN_VALUE;
 		
-		int penalty = solveStateProperty.get() == SolveState.PLUS2 ? 2 : 0;
-		int otherPenalty = o.solveStateProperty.get() == SolveState.PLUS2 ? 2 : 0;
-		return (int)(100 * (getRealTime() + penalty - (o.getRealTime() + otherPenalty)));
+		return (int)(100 * (getRealTime() - (o.getRealTime())));
 	}
 	
 	public String toString()

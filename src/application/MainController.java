@@ -8,12 +8,16 @@
 package application;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.stream.IntStream;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
@@ -47,6 +51,8 @@ public class MainController implements Initializable{
 	private KeyCombination okCombo = new KeyCodeCombination(KeyCode.DIGIT1, KeyCodeCombination.CONTROL_DOWN);
 	private KeyCombination plus2Combo = new KeyCodeCombination(KeyCode.DIGIT2, KeyCodeCombination.CONTROL_DOWN);
 	private KeyCombination dnfCombo = new KeyCodeCombination(KeyCode.DIGIT3, KeyCodeCombination.CONTROL_DOWN);
+	private KeyCombination upCombo = new KeyCodeCombination(KeyCode.UP);
+	private KeyCombination downCombo = new KeyCodeCombination(KeyCode.DOWN);
 	
 	Stopwatch st = new Stopwatch();
 	SimpleTimer delay = new SimpleTimer();
@@ -54,7 +60,7 @@ public class MainController implements Initializable{
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		
+
 		solveNumber.setCellValueFactory(new PropertyValueFactory<Solve, Integer>("solveNumber"));
 		displayedTime.setCellValueFactory(new PropertyValueFactory<Solve, String>("displayedTime"));
 		mo3.setCellValueFactory(new PropertyValueFactory<Solve, Solve>("this"));
@@ -83,12 +89,25 @@ public class MainController implements Initializable{
 						else if(item.contains("+")) setTextFill(Color.ORANGE);
 						else setTextFill(Color.BLACK);
 					}
+					
+					hoverProperty().addListener(observable -> {
+						if(isHover() && item != null)
+						{
+							setCursor(Cursor.HAND);
+							setScaleX(1.2);
+							setScaleY(1.2);
+						} else {
+							setCursor(Cursor.DEFAULT);
+							setScaleX(1);
+							setScaleY(1);
+						}
+					});
 				}
 			};
 		});
 		
 		mo3.setCellFactory(col -> {
-			return new TableCell<Solve, Solve>() {
+			final TableCell<Solve, Solve> cell = new TableCell<Solve, Solve>() {
 				
 				@Override
 				protected void updateItem(Solve item, boolean empty) {
@@ -97,12 +116,28 @@ public class MainController implements Initializable{
 						setText(null);
 					}
 					else {
-						String text = getFormattedAverage(item, 3, false);
+						String text = (new Average(item, timeList, 3, false)).getAverageString();
 						setText(text);
 						setTextFill(text.equals("DNF") ? Color.RED : Color.BLACK);
 					}
+					
+					hoverProperty().addListener(observable -> {
+						Solve solve = getItem();
+						if(solve != null && isHover())
+						{
+							setCursor(Cursor.HAND);
+							setScaleX(1.2);
+							setScaleY(1.2);
+						} else {
+							setCursor(Cursor.DEFAULT);
+							setScaleX(1);
+							setScaleY(1);
+						}
+					});
 				}
 			};
+			
+			return cell;
 		});
 		
 		ao5.setCellFactory(col -> {
@@ -115,10 +150,24 @@ public class MainController implements Initializable{
 						setText(null);
 					}
 					else {
-						String text = getFormattedAverage(item, 5, true);
+						String text = (new Average(item, timeList, 5, true)).getAverageString();
 						setText(text);
 						setTextFill(text.equals("DNF") ? Color.RED : Color.BLACK);
 					}
+					
+					hoverProperty().addListener(observable -> {
+						Solve solve = getItem();
+						if(solve != null && isHover())
+						{
+							setCursor(Cursor.HAND);
+							setScaleX(1.2);
+							setScaleY(1.2);
+						} else {
+							setCursor(Cursor.DEFAULT);
+							setScaleX(1);
+							setScaleY(1);
+						}
+					});
 				}
 			};
 		});
@@ -133,10 +182,24 @@ public class MainController implements Initializable{
 						setText(null);
 					}
 					else {
-						String text = getFormattedAverage(item, 12, true);
+						String text = (new Average(item, timeList, 12, true)).getAverageString();
 						setText(text);
 						setTextFill(text.equals("DNF") ? Color.RED : Color.BLACK);
 					}
+					
+					hoverProperty().addListener(observable -> {
+						Solve solve = getItem();
+						if(solve != null && isHover())
+						{
+							setCursor(Cursor.HAND);
+							setScaleX(1.2);
+							setScaleY(1.2);
+						} else {
+							setCursor(Cursor.DEFAULT);
+							setScaleX(1);
+							setScaleY(1);
+						}
+					});
 				}
 			};
 		});
@@ -146,6 +209,8 @@ public class MainController implements Initializable{
 		root.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
 			if(spaceCombo.match(e))
 			{
+				timerLabel.setScaleX(0.9);
+				timerLabel.setScaleY(0.9);
 				keyPressCount++;
 				if(keyPressCount == 1)
 				{
@@ -154,7 +219,7 @@ public class MainController implements Initializable{
 						st.pause();
 						int largestIndex = timeList.getItems().size();
 						timeList.getItems().add(new Solve(largestIndex + 1, st.getTime()));
-						timeList.getSelectionModel().select(largestIndex);
+						timeList.getSelectionModel().select(largestIndex, solveNumber);
 						timeList.scrollTo(largestIndex);
 					} else {
 						delay.start();
@@ -171,6 +236,8 @@ public class MainController implements Initializable{
 		root.addEventFilter(KeyEvent.KEY_RELEASED, e -> {
 			if(spaceCombo.match(e)) 
 			{
+				timerLabel.setScaleX(1);
+				timerLabel.setScaleY(1);
 				timerLabel.setTextFill(Color.web("#000000"));
 				keyPressCount = 0;
 				
@@ -209,6 +276,25 @@ public class MainController implements Initializable{
 			if(dnfCombo.match(e)) dnf();
 		});
 		
+		root.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+			if(upCombo.match(e))
+			{
+				try
+				{
+					timeList.getSelectionModel().select(timeList.getSelectionModel().getSelectedIndex() - 1);
+				} catch (IndexOutOfBoundsException error) {}
+			}
+		});
+		
+		root.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
+			if(downCombo.match(e))
+			{
+				try
+				{
+					timeList.getSelectionModel().select(timeList.getSelectionModel().getSelectedIndex() + 1);
+				} catch (IndexOutOfBoundsException error) {}
+			}
+		});
 	}
 	
 	public void clear()
@@ -262,6 +348,7 @@ public class MainController implements Initializable{
 		} catch(NullPointerException e) {}
 	}
 	
+	/*
 	private double getAverage(Solve item, int numSolves, boolean isAverage)
 	{
 		try {
@@ -274,17 +361,14 @@ public class MainController implements Initializable{
 			Solve[] solves = new Solve[numSolves];
 			for(int i = 0; i < solves.length; i++) solves[i] = timeList.getItems().get(i + startIndex);
 			Arrays.sort(solves);
+			
 			int uncountedSolves = 0;
 			if(isAverage) uncountedSolves = (numSolves <= 10) ? 1 : (int)Math.round(numSolves * 0.05);
 			
 			for(int i = uncountedSolves; i < solves.length - uncountedSolves; i++)
 			{
-				
-				if(solves[i].solveStateProperty.get() == SolveState.OK)
-					sum += solves[i].getRealTime();
-				else if(solves[i].solveStateProperty.get() == SolveState.PLUS2)
-					sum += solves[i].getRealTime() + 2;
-				else return -2;
+				if(solves[i].solveStateProperty.get() == SolveState.DNF) return -2;
+				else sum += solves[i].getRealTime();
 			}
 			double mean = sum / (numSolves - (2 * uncountedSolves));
 			return(mean);
@@ -299,5 +383,5 @@ public class MainController implements Initializable{
 		if(value == -1) return "-";
 		else if(value == -2) return "DNF";
 		else return Stopwatch.formatTime(value);
-	}
+	}*/
 }
