@@ -6,7 +6,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class Solve implements Comparable<Solve> {
+public class Solve implements Comparable<Solve>, Time {
 	private SimpleIntegerProperty solveNumber;
 	private SimpleStringProperty displayedTime;
 	public SimpleDoubleProperty realTime;
@@ -40,7 +40,6 @@ public class Solve implements Comparable<Solve> {
 					displayedTime.set("DNF");
 			}
 		});
-
 	}
 	
 	public Solve getThis() {
@@ -59,6 +58,7 @@ public class Solve implements Comparable<Solve> {
 		solveNumber.setValue(x);
 	}
 
+	@Override
 	public String getDisplayedTime() {
 		return displayedTime.get();
 	}
@@ -66,12 +66,6 @@ public class Solve implements Comparable<Solve> {
 	public void resetDisplay()
 	{
 		displayedTime.set(Stopwatch.formatTime(realTime.doubleValue()));
-	}
-	
-	public boolean equals(Solve other)
-	{
-		if(realTime == other.realTime && solveNumber == other.solveNumber) return true;
-		else return false;
 	}
 
 	@Override
@@ -87,6 +81,7 @@ public class Solve implements Comparable<Solve> {
 	
 	public String toString()
 	{
-		return displayedTime.get();
+		if(solveStateProperty.get() == SolveState.DNF) return "DNF[" + Stopwatch.formatTime(getRealTime()) + "]";
+		else return displayedTime.get();
 	}
 }

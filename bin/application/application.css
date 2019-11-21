@@ -25,8 +25,13 @@
 	-fx-border-color: #ededed;
 }
 
+.table-row-cell .button {
+	-fx-border-color: TRANSPARENT;
+	-fx-background-color: TRANSPARENT;
+	-fx-padding: 0 0 0 0;
+}
 
-.button {
+#clear, #delete {
 	-fx-background-color: #deefff;
 	-fx-text-fill: #007aed;
 	-fx-font-weight: bold;
@@ -44,5 +49,25 @@
 
 #ok, #plus2, #dnf {
 	-fx-background-color: #ffdea1;
-	-fx-text-fill: #c95b00
+	-fx-text-fill: #c95b00;
+	-fx-font-weight: bold;
+}
+
+.popup {
+	-fx-background-color: TRANSPARENT;
+}
+
+.popup .label{
+	-fx-font-size: 18;
+	-fx-padding: 20 20 20 20;
+	-fx-alignment: TOP_LEFT;
+	-fx-border-width: 5;
+	-fx-border-color: rgb(222, 239, 255);
+	-fx-background-color: WHITE;
+	-fx-background-radius: 20 20 20 20;
+	-fx-border-radius: 10 10 10 10;
+}
+
+.table-row-cell .button {
+	
 }

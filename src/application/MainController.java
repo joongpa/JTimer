@@ -1,24 +1,24 @@
 /*
  * To-do list:
- * - Make time list selectable and display averages
+ * - Add translucent white pane to main window when popup is showing
+ * - Make time generated time list selectable
  * - Show best statistics in lower left corner
  * - *Scramble generation*
- * - 
+ * - Progress bar that shows how long spacebar must be held for
+ * - <LAST PRIORITY> Stackmat input
 */
 package application;
 
+import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.ResourceBundle;
-import java.util.stream.IntStream;
-
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -28,18 +28,23 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.stage.Popup;
 
 public class MainController implements Initializable{
+	
+	private Popup popup;
 	
 	@FXML private Parent root;
 	@FXML private Label timerLabel;
 	@FXML private TableView<Solve> timeList;
 	@FXML private TableColumn<Solve, Integer> solveNumber;
-	@FXML private TableColumn<Solve, String> displayedTime;
-	@FXML private TableColumn<Solve, Solve> mo3;
-	@FXML private TableColumn<Solve, Solve> ao5;
-	@FXML private TableColumn<Solve, Solve> ao12;
+	@FXML private TableColumn<Solve, Time> displayedTime;
+	@FXML private TableColumn<Solve, Time> mo3;
+	@FXML private TableColumn<Solve, Time> ao5;
+	@FXML private TableColumn<Solve, Time> ao12;
+	
 
 	//private Timeline timeline;
 	private int keyPressCount = 0;
@@ -61,11 +66,13 @@ public class MainController implements Initializable{
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 
+		popup = newPopup();
+		
 		solveNumber.setCellValueFactory(new PropertyValueFactory<Solve, Integer>("solveNumber"));
-		displayedTime.setCellValueFactory(new PropertyValueFactory<Solve, String>("displayedTime"));
-		mo3.setCellValueFactory(new PropertyValueFactory<Solve, Solve>("this"));
-		ao5.setCellValueFactory(new PropertyValueFactory<Solve, Solve>("this"));
-		ao12.setCellValueFactory(new PropertyValueFactory<Solve, Solve>("this"));
+		displayedTime.setCellValueFactory(new PropertyValueFactory<Solve, Time>("this"));
+		mo3.setCellValueFactory(new PropertyValueFactory<Solve, Time>("this"));
+		ao5.setCellValueFactory(new PropertyValueFactory<Solve, Time>("this"));
+		ao12.setCellValueFactory(new PropertyValueFactory<Solve, Time>("this"));
 		
 		solveNumber.setSortable(false);
 		displayedTime.setSortable(false);
@@ -74,132 +81,49 @@ public class MainController implements Initializable{
 		ao12.setSortable(false);
 		
 		displayedTime.setCellFactory(col -> {
-			return new TableCell<Solve, String>() {
-				
+			return new TableCell<Solve, Time>() {
+
 				@Override
-				protected void updateItem(String item, boolean empty) {
+				protected void updateItem(Time item, boolean empty) {
 					super.updateItem(item, empty);
-					
-					if(item == null || empty) {
-						setText(null);
-					}
-					else {
-						setText(item);
-						if(item.equals("DNF")) setTextFill(Color.RED);
-						else if(item.contains("+")) setTextFill(Color.ORANGE);
-						else setTextFill(Color.BLACK);
-					}
-					
-					hoverProperty().addListener(observable -> {
-						if(isHover() && item != null)
-						{
-							setCursor(Cursor.HAND);
-							setScaleX(1.2);
-							setScaleY(1.2);
-						} else {
-							setCursor(Cursor.DEFAULT);
-							setScaleX(1);
-							setScaleY(1);
-						}
-					});
+					avgUpdate(this, item, empty);
 				}
 			};
 		});
 		
 		mo3.setCellFactory(col -> {
-			final TableCell<Solve, Solve> cell = new TableCell<Solve, Solve>() {
+			final TableCell<Solve, Time> cell = new TableCell<Solve, Time>() {
 				
 				@Override
-				protected void updateItem(Solve item, boolean empty) {
+				protected void updateItem(Time item, boolean empty) {
+					Average average = new Average((Solve)item, timeList, 3, false);
 					super.updateItem(item, empty);
-					if(item == null || empty) {
-						setText(null);
-					}
-					else {
-						String text = (new Average(item, timeList, 3, false)).getAverageString();
-						setText(text);
-						setTextFill(text.equals("DNF") ? Color.RED : Color.BLACK);
-					}
-					
-					hoverProperty().addListener(observable -> {
-						Solve solve = getItem();
-						if(solve != null && isHover())
-						{
-							setCursor(Cursor.HAND);
-							setScaleX(1.2);
-							setScaleY(1.2);
-						} else {
-							setCursor(Cursor.DEFAULT);
-							setScaleX(1);
-							setScaleY(1);
-						}
-					});
+					avgUpdate(this, average, empty);
 				}
 			};
-			
 			return cell;
 		});
 		
 		ao5.setCellFactory(col -> {
-			return new TableCell<Solve, Solve>() {
+			return new TableCell<Solve, Time>() {
 				
 				@Override
-				protected void updateItem(Solve item, boolean empty) {
+				protected void updateItem(Time item, boolean empty) {
+					Average average = new Average((Solve)item, timeList, 5, true);
 					super.updateItem(item, empty);
-					if(item == null || empty) {
-						setText(null);
-					}
-					else {
-						String text = (new Average(item, timeList, 5, true)).getAverageString();
-						setText(text);
-						setTextFill(text.equals("DNF") ? Color.RED : Color.BLACK);
-					}
-					
-					hoverProperty().addListener(observable -> {
-						Solve solve = getItem();
-						if(solve != null && isHover())
-						{
-							setCursor(Cursor.HAND);
-							setScaleX(1.2);
-							setScaleY(1.2);
-						} else {
-							setCursor(Cursor.DEFAULT);
-							setScaleX(1);
-							setScaleY(1);
-						}
-					});
+					avgUpdate(this, average, empty);
 				}
 			};
 		});
 		
 		ao12.setCellFactory(col -> {
-			return new TableCell<Solve, Solve>() {
+			return new TableCell<Solve, Time>() {
 				
 				@Override
-				protected void updateItem(Solve item, boolean empty) {
+				protected void updateItem(Time item, boolean empty) {
+					Average average = new Average((Solve)item, timeList, 12, true);
 					super.updateItem(item, empty);
-					if(item == null || empty) {
-						setText(null);
-					}
-					else {
-						String text = (new Average(item, timeList, 12, true)).getAverageString();
-						setText(text);
-						setTextFill(text.equals("DNF") ? Color.RED : Color.BLACK);
-					}
-					
-					hoverProperty().addListener(observable -> {
-						Solve solve = getItem();
-						if(solve != null && isHover())
-						{
-							setCursor(Cursor.HAND);
-							setScaleX(1.2);
-							setScaleY(1.2);
-						} else {
-							setCursor(Cursor.DEFAULT);
-							setScaleX(1);
-							setScaleY(1);
-						}
-					});
+					avgUpdate(this, average, empty);
 				}
 			};
 		});
@@ -209,8 +133,6 @@ public class MainController implements Initializable{
 		root.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
 			if(spaceCombo.match(e))
 			{
-				timerLabel.setScaleX(0.9);
-				timerLabel.setScaleY(0.9);
 				keyPressCount++;
 				if(keyPressCount == 1)
 				{
@@ -236,8 +158,6 @@ public class MainController implements Initializable{
 		root.addEventFilter(KeyEvent.KEY_RELEASED, e -> {
 			if(spaceCombo.match(e)) 
 			{
-				timerLabel.setScaleX(1);
-				timerLabel.setScaleY(1);
 				timerLabel.setTextFill(Color.web("#000000"));
 				keyPressCount = 0;
 				
@@ -282,6 +202,7 @@ public class MainController implements Initializable{
 				try
 				{
 					timeList.getSelectionModel().select(timeList.getSelectionModel().getSelectedIndex() - 1);
+					
 				} catch (IndexOutOfBoundsException error) {}
 			}
 		});
@@ -348,40 +269,44 @@ public class MainController implements Initializable{
 		} catch(NullPointerException e) {}
 	}
 	
-	/*
-	private double getAverage(Solve item, int numSolves, boolean isAverage)
+	public Popup newPopup()
 	{
-		try {
-			int startIndex = IntStream.range(0, timeList.getItems().size())
-								.filter(i -> item.equals(timeList.getItems().get(i)))
-								.findFirst()
-								.orElse(-1)
-								- numSolves + 1;
-			double sum = 0;
-			Solve[] solves = new Solve[numSolves];
-			for(int i = 0; i < solves.length; i++) solves[i] = timeList.getItems().get(i + startIndex);
-			Arrays.sort(solves);
-			
-			int uncountedSolves = 0;
-			if(isAverage) uncountedSolves = (numSolves <= 10) ? 1 : (int)Math.round(numSolves * 0.05);
-			
-			for(int i = uncountedSolves; i < solves.length - uncountedSolves; i++)
-			{
-				if(solves[i].solveStateProperty.get() == SolveState.DNF) return -2;
-				else sum += solves[i].getRealTime();
+		Popup popup = new Popup();
+		popup.setX(30);
+		popup.setY(100);
+		popup.setAutoHide(true);
+		return popup;
+	}
+	
+	public Label newTimeInfoLabel(String string)
+	{
+		Label timeInfoLabel = new Label("Generated by JTimer:\n" + string);
+		timeInfoLabel.setMinSize(700, 400);
+		return timeInfoLabel;
+	}
+	
+	private void avgUpdate(TableCell<Solve, Time> cell, Time item, boolean empty)
+	{
+		if(item == null || empty || cell.getItem() == null) {
+			cell.setText(null);
+			cell.setGraphic(null);
+		}
+		else {
+			String text = item.getDisplayedTime();
+			if(!text.equals("-")) {
+				Button button = new Button(text);
+				cell.setGraphic(button);
+				if(text.contains("+")) button.setTextFill(Color.DARKORANGE);
+				else if(text.contains("DNF")) button.setTextFill(Color.RED);
+				else button.setTextFill(Color.BLACK);
+				
+				button.setOnAction(e -> {
+					popup.getContent().removeAll(popup.getContent());
+					popup.getContent().add(newTimeInfoLabel(((Object)item).toString()));
+					popup.show(Main.primaryStage);
+				});
 			}
-			double mean = sum / (numSolves - (2 * uncountedSolves));
-			return(mean);
-		} catch(IndexOutOfBoundsException e) {
-			return -1;
 		}
 	}
 	
-	private String getFormattedAverage(Solve item, int numSolves, boolean isAverage)
-	{
-		double value = getAverage(item, numSolves, isAverage);
-		if(value == -1) return "-";
-		else if(value == -2) return "DNF";
-		else return Stopwatch.formatTime(value);
-	}*/
 }

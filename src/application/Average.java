@@ -6,13 +6,13 @@ import java.util.stream.IntStream;
 
 import javafx.scene.control.TableView;
 
-public class Average {
+public class Average implements Time {
 	
 	private Solve[] solves;
 	private int numSolves;
-	private boolean isAverage;
 	private int numUncountedSolves;
 	private HashSet<Solve> uncountedSolves;
+	private boolean isAverage;
 	
 	private double average;
 	
@@ -36,8 +36,8 @@ public class Average {
 		uncountedSolves = new HashSet<Solve>();
 		solves = new Solve[numSolves];
 		this.numSolves = numSolves;
-		this.isAverage = isAverage;
 		setSolves(solve, timeList);
+		this.isAverage = isAverage;
 		
 		if(isAverage)
 		{
@@ -64,42 +64,53 @@ public class Average {
 	{
 		if(solves == null) return -1;
 
-		Solve minValue = solves[0], maxValue = solves[0];
-		double sum = 0;
 		
-		for(int i = 0; i < numUncountedSolves; i++)
+		Solve[] countedSolves = new Solve[solves.length];
+		for(int i = 0; i < solves.length; i++) countedSolves[i] = solves[i];
+		Arrays.sort(countedSolves);
+		double mean = 0;
+		
+		for(int i = 0; i < countedSolves.length; i++)
 		{
-			for(int j = 1; j < solves.length; j++)
-			{
-				minValue = (solves[j].compareTo(minValue) < 0
-							&& !uncountedSolves.contains(solves[j])) ? solves[j] : minValue;
-				maxValue = (solves[j].compareTo(minValue) > 0
-							&& !uncountedSolves.contains(solves[j])) ? solves[j] : maxValue;
+			if(i < numUncountedSolves || i >= countedSolves.length - numUncountedSolves) {
+				uncountedSolves.add(countedSolves[i]);
+				continue;
 			}
-			uncountedSolves.add(minValue);
-			uncountedSolves.add(maxValue);
+			else if(countedSolves[i].solveStateProperty.get() == SolveState.DNF && !uncountedSolves.contains(countedSolves[i])) {
+				return -2;
+			}
+			mean += countedSolves[i].getRealTime();
 		}
-		if(Arrays.stream(solves).filter(s -> s.solveStateProperty.get() == SolveState.DNF).count() > numUncountedSolves) return -2;
-		sum = Arrays.stream(solves).mapToDouble(Solve::getRealTime).sum();
-		sum -= uncountedSolves.stream().mapToDouble(Solve::getRealTime).sum();
-		double mean = sum / (numSolves - (2 * numUncountedSolves));
-		return(mean);
+		mean /= solves.length - (2 * numUncountedSolves);
+		return mean;
 	}
 	
-	public String getAverageString()
+	@Override
+	public String getDisplayedTime()
 	{
 		if(average == -1) return "-";
 		if(average == -2) return "DNF";
 		else return Stopwatch.formatTime(average);
 	}
 	
+	@Override
 	public String toString()
 	{
-		String output = "";
+		if(solves == null) return "";
+		String output = (isAverage) ? "Average" : "Mean";
+		output += " of " + numSolves + ":   " + getDisplayedTime() + "\n";
+
 		for(int i = 0; i < solves.length; i++)
 		{
-			output += (uncountedSolves.contains(solves[i])) ? "(" + solves[i].getDisplayedTime() + ")\n"
-															: solves[i].getDisplayedTime();
+			output += i + 1 + ".\t";
+			String temp = Stopwatch.formatTime(solves[i].getRealTime());
+			String tempDNF = "DNF[" + temp + "]";
+			
+			if(uncountedSolves.contains(solves[i]))
+				output += "(" + (solves[i].solveStateProperty.get() == SolveState.DNF ? tempDNF : temp) + ")";
+			else 
+				output += (solves[i].solveStateProperty.get() == SolveState.DNF ? tempDNF : temp);
+			output += "\n";
 		}
 		return output;
 	}
