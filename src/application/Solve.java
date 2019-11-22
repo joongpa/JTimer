@@ -9,17 +9,19 @@ import javafx.beans.property.SimpleStringProperty;
 public class Solve implements Comparable<Solve>, Time {
 	private SimpleIntegerProperty solveNumber;
 	private SimpleStringProperty displayedTime;
+	private String scramble;
 	public SimpleDoubleProperty realTime;
 	
 	public ObjectProperty<SolveState> solveStateProperty;
 	
-	public Solve(Integer solveNumber, Double realTime) {
+	public Solve(Integer solveNumber, Double realTime, String scramble) {
 		super();
 		solveStateProperty = new SimpleObjectProperty<SolveState>(SolveState.OK);
 		
 		this.solveNumber = new SimpleIntegerProperty(solveNumber);
 		this.realTime = new SimpleDoubleProperty(realTime);
 		this.displayedTime = new SimpleStringProperty();
+		this.scramble = scramble;
 		resetDisplay();
 		
 		solveStateProperty.addListener((o, oldval, newVal) -> {
@@ -83,5 +85,10 @@ public class Solve implements Comparable<Solve>, Time {
 	{
 		if(solveStateProperty.get() == SolveState.DNF) return "DNF[" + Stopwatch.formatTime(getRealTime()) + "]";
 		else return displayedTime.get();
+	}
+	
+	public String getScramble()
+	{
+		return scramble;
 	}
 }

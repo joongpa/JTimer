@@ -49,15 +49,21 @@ public class Average implements Time {
 	
 	private void setSolves(Solve solve, TableView<Solve> timeList) {
 		try {
-			int startIndex = IntStream.range(0, timeList.getItems().size())
-					.filter(i -> solve == timeList.getItems().get(i))
-					.findFirst()
-					.orElse(-1)
-					- numSolves + 1;
+			int startIndex = findIndex(solve, timeList) - numSolves + 1;
 			for(int i = 0; i < solves.length; i++) solves[i] = timeList.getItems().get(i + startIndex);
 		} catch (IndexOutOfBoundsException e) {
 			solves = null;
 		}
+	}
+	
+	public static int findIndex(Solve solve, TableView<Solve> timeList)
+	{
+		int index = IntStream.range(0, timeList.getItems().size())
+				.filter(i -> solve == timeList.getItems().get(i))
+				.findFirst()
+				.orElse(-1);
+		
+		return index;
 	}
 	
 	public double getAverage()
@@ -103,13 +109,16 @@ public class Average implements Time {
 		for(int i = 0; i < solves.length; i++)
 		{
 			output += i + 1 + ".\t";
-			String temp = Stopwatch.formatTime(solves[i].getRealTime());
-			String tempDNF = "DNF[" + temp + "]";
+			//String temp = Stopwatch.formatTime(solves[i].getRealTime());
+			//String tempDNF = "DNF[" + temp + "]";
+			String better = solves[i].toString();
 			
 			if(uncountedSolves.contains(solves[i]))
-				output += "(" + (solves[i].solveStateProperty.get() == SolveState.DNF ? tempDNF : temp) + ")";
+				output += "(" + better + ")   " + solves[i].getScramble();
+				//output += "(" + (solves[i].solveStateProperty.get() == SolveState.DNF ? tempDNF : temp) + ")";
 			else 
-				output += (solves[i].solveStateProperty.get() == SolveState.DNF ? tempDNF : temp);
+				output += better + "   " + solves[i].getScramble();
+				//output += (solves[i].solveStateProperty.get() == SolveState.DNF ? tempDNF : temp);
 			output += "\n";
 		}
 		return output;
