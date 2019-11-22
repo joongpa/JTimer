@@ -6,22 +6,24 @@ import java.util.stream.IntStream;
 
 import javafx.scene.control.TableView;
 
-public class Average implements Time {
+public class Average implements Time, Comparable<Solve> {
 	
 	private Solve[] solves;
 	private int numSolves;
 	private int numUncountedSolves;
 	private HashSet<Solve> uncountedSolves;
 	private boolean isAverage;
+	private boolean dnfMatters;
 	
 	private double average;
 	
-	public Average(Solve[] solves, int numSolves, boolean isAverage)
+	public Average(Solve[] solves, boolean isAverage, boolean dnfMatters)
 	{
 		uncountedSolves = new HashSet<Solve>();
 		this.solves = solves;
-		this.numSolves = numSolves;
+		this.numSolves = solves.length;
 		this.isAverage = isAverage;
+		this.dnfMatters = dnfMatters;
 		
 		if(isAverage)
 		{
@@ -31,13 +33,14 @@ public class Average implements Time {
 		average = getAverage();
 	}
 	
-	public Average(Solve solve, TableView<Solve> timeList, int numSolves, boolean isAverage)
+	public Average(Solve solve, TableView<Solve> timeList, int numSolves, boolean isAverage, boolean dnfMatters)
 	{
 		uncountedSolves = new HashSet<Solve>();
 		solves = new Solve[numSolves];
 		this.numSolves = numSolves;
 		setSolves(solve, timeList);
 		this.isAverage = isAverage;
+		this.dnfMatters = dnfMatters;
 		
 		if(isAverage)
 		{
@@ -66,7 +69,7 @@ public class Average implements Time {
 		return index;
 	}
 	
-	public double getAverage()
+	public double getAverage() //fix this
 	{
 		if(solves == null) return -1;
 
@@ -109,18 +112,20 @@ public class Average implements Time {
 		for(int i = 0; i < solves.length; i++)
 		{
 			output += i + 1 + ".\t";
-			//String temp = Stopwatch.formatTime(solves[i].getRealTime());
-			//String tempDNF = "DNF[" + temp + "]";
 			String better = solves[i].toString();
 			
 			if(uncountedSolves.contains(solves[i]))
 				output += "(" + better + ")   " + solves[i].getScramble();
-				//output += "(" + (solves[i].solveStateProperty.get() == SolveState.DNF ? tempDNF : temp) + ")";
 			else 
 				output += better + "   " + solves[i].getScramble();
-				//output += (solves[i].solveStateProperty.get() == SolveState.DNF ? tempDNF : temp);
 			output += "\n";
 		}
 		return output;
+	}
+
+	@Override
+	public int compareTo(Solve o) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

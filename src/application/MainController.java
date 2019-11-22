@@ -2,7 +2,6 @@
  * To-do list:
  * - Make time generated time list selectable
  * - Show best statistics in lower left corner
- * - *Scramble generation*
  * - Progress bar that shows how long spacebar must be held for
  * - <LAST PRIORITY> Stackmat input
 */
@@ -14,6 +13,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
@@ -55,6 +59,14 @@ public class MainController implements Initializable{
 	@FXML private TableColumn<Solve, Time> ao5;
 	@FXML private TableColumn<Solve, Time> ao12;
 	
+	@FXML private Label accuracy;
+	@FXML private Label bestTime;
+	@FXML private Label bestMean;
+	@FXML private Label bestAverage5;
+	@FXML private Label bestAverage12;
+	@FXML private Label mean;
+	@FXML private Label average;
+	
 
 	//private Timeline timeline;
 	private int keyPressCount = 0;
@@ -72,7 +84,7 @@ public class MainController implements Initializable{
 	Stopwatch st = new Stopwatch();
 	SimpleTimer delay = new SimpleTimer();
 	private boolean ready = false;
-	
+
 	ObservableList<Solve> dummyList;
 
 	@Override
@@ -112,7 +124,7 @@ public class MainController implements Initializable{
 				
 				@Override
 				protected void updateItem(Time item, boolean empty) {
-					Average average = new Average((Solve)item, timeList, 3, false);
+					Average average = new Average((Solve)item, timeList, 3, false, true);
 					super.updateItem(item, empty);
 					avgUpdate(this, average, empty);
 				}
@@ -125,7 +137,7 @@ public class MainController implements Initializable{
 				
 				@Override
 				protected void updateItem(Time item, boolean empty) {
-					Average average = new Average((Solve)item, timeList, 5, true);
+					Average average = new Average((Solve)item, timeList, 5, true, true);
 					super.updateItem(item, empty);
 					avgUpdate(this, average, empty);
 				}
@@ -137,7 +149,7 @@ public class MainController implements Initializable{
 				
 				@Override
 				protected void updateItem(Time item, boolean empty) {
-					Average average = new Average((Solve)item, timeList, 12, true);
+					Average average = new Average((Solve)item, timeList, 12, true, true);
 					super.updateItem(item, empty);
 					avgUpdate(this, average, empty);
 				}
@@ -159,7 +171,7 @@ public class MainController implements Initializable{
 						timeList.getItems().add(new Solve(largestIndex + 1, st.getTime(), scrambleText.getText()));
 						timeList.getSelectionModel().select(largestIndex, solveNumber);
 						timeList.scrollTo(largestIndex);
-						
+						setSessionStats();
 				        setScramble(scrambleText);
 					} else {
 						delay.start();
@@ -239,6 +251,7 @@ public class MainController implements Initializable{
 	public void clear()
 	{
 		timeList.getItems().clear();
+		clearStats();
 	}
 	
 	public void delete()
@@ -261,6 +274,7 @@ public class MainController implements Initializable{
 				timeList.getItems().get(i).setSolveNumber(currentNum - 1);
 			}
 		}
+		setSessionStats();
 	}
 	
 	public void ok()
@@ -269,6 +283,7 @@ public class MainController implements Initializable{
 			timeList.getSelectionModel().getSelectedItem().solveStateProperty.set(SolveState.OK);
 			timeList.refresh();
 		} catch(NullPointerException e) {}
+		setSessionStats();
 	}
 	
 	public void plus2()
@@ -277,6 +292,7 @@ public class MainController implements Initializable{
 			timeList.getSelectionModel().getSelectedItem().solveStateProperty.set(SolveState.PLUS2);
 			timeList.refresh();
 		} catch(NullPointerException e) {}
+		setSessionStats();
 	}
 	
 	public void dnf()
@@ -285,6 +301,7 @@ public class MainController implements Initializable{
 			timeList.getSelectionModel().getSelectedItem().solveStateProperty.set(SolveState.DNF);
 			timeList.refresh();
 		} catch(NullPointerException e) {}
+		setSessionStats();
 	}
 	
 	public Popup newPopup()
@@ -344,6 +361,55 @@ public class MainController implements Initializable{
         }
         catch (MalformedURLException error) {}
         catch (IOException error) {}
+	}
+	
+	public void setSessionStats()
+	{
+		Solve[] solveList = Arrays.copyOf(timeList.getItems().toArray(), timeList.getItems().size(), Solve[].class);
+		
+		int successes = 0;
+		for(Solve solve : timeList.getItems())
+		{
+			if(solve.solveStateProperty.get() != SolveState.DNF) successes++;
+		}
+		int rate = (int)(100 * ((double)successes/timeList.getItems().size()));
+		accuracy.setText(rate + "%   " + successes + "/" + timeList.getItems().size());
+		
+		if(solveList.length > 0) {
+			Average mean1 = new Average(solveList, false, false);
+			mean.setText(mean1.getDisplayedTime());
+		}
+			
+		if(solveList.length > 2) {
+			Average average1 = new Average(solveList, true, true);
+			average.setText(average1.getDisplayedTime());
+		}
+		
+		/*double min = Arrays.stream(solveList)
+				.mapToDouble(s -> (s.solveStateProperty.get() != SolveState.DNF) ? s.getRealTime() : Double.MAX_VALUE)
+				.min()
+				.orElseThrow(NoSuchElementException::new);
+		bestTime.setText(String.valueOf(Stopwatch.formatTime(min)));
+		
+		if(solveList.length >= 5) {
+			Double[] times = new Double[solveList.length - 4];
+			for(int i = 0; i < solveList.length; i++) {
+				for(int j = 0; j < 5; j++) {
+					times[i] += timeList.getItems().get(i).getRealTime();
+				}
+			}
+			double minAverage = Collections.min(Arrays.asList(times));
+			bestAverage5.setTe
+		}*/
+		
+	}
+	
+	public void clearStats()
+	{
+		accuracy.setText(null);
+		mean.setText(null);
+		average.setText(null);
+		bestTime.setText(null);
 	}
 	
 }
