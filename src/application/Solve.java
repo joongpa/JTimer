@@ -11,6 +11,9 @@ public class Solve implements Comparable<Solve>, Time {
 	private SimpleStringProperty displayedTime;
 	private String scramble;
 	public SimpleDoubleProperty realTime;
+	public Average mo3;
+	public Average ao5;
+	public Average ao12;
 	
 	public ObjectProperty<SolveState> solveStateProperty;
 	
@@ -78,7 +81,7 @@ public class Solve implements Comparable<Solve>, Time {
 			else return Integer.MAX_VALUE;
 		} else if(o.solveStateProperty.get() == SolveState.DNF) return Integer.MIN_VALUE;
 		
-		return (int)(100 * (getRealTime() - (o.getRealTime())));
+		return (int)(1000 * (getRealTime() - (o.getRealTime())));
 	}
 	
 	public String toString()

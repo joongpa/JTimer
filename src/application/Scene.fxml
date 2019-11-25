@@ -128,9 +128,9 @@
                     <columns>
                       <TableColumn fx:id="solveNumber" prefWidth="45.0" style="-fx-text-fill: #808080;" />
                       <TableColumn fx:id="displayedTime" prefWidth="110.0" style="-fx-alignment: CENTER;" text="Time" />
-                        <TableColumn fx:id="mo3" style="-fx-alignment: CENTER;" text="Mo3" />
-                        <TableColumn fx:id="ao5" style="-fx-alignment: CENTER;" text="Ao5" />
-                        <TableColumn fx:id="ao12" style="-fx-alignment: CENTER;" text="Ao12" />
+                        <TableColumn fx:id="mo3" editable="false" style="-fx-alignment: CENTER;" text="Mo3" />
+                        <TableColumn fx:id="ao5" editable="false" style="-fx-alignment: CENTER;" text="Ao5" />
+                        <TableColumn fx:id="ao12" editable="false" style="-fx-alignment: CENTER;" text="Ao12" />
                     </columns>
                      <VBox.margin>
                         <Insets right="2.0" />
@@ -172,7 +172,7 @@
                      </padding>
                   </Label>
                   <Label text="Alg Count" textFill="#7c7c7c" GridPane.rowIndex="1" />
-                  <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <ChoiceBox fx:id="algCount" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                </children>
             </GridPane>
             <GridPane GridPane.columnIndex="1" GridPane.rowIndex="1">

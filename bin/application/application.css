@@ -25,7 +25,7 @@
 	-fx-border-color: #ededed;
 }
 
-.table-row-cell .button {
+.table-row-cell .button, .label .button {
 	-fx-border-color: TRANSPARENT;
 	-fx-background-color: TRANSPARENT;
 	-fx-padding: 0 0 0 0;

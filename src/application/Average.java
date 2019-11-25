@@ -6,7 +6,7 @@ import java.util.stream.IntStream;
 
 import javafx.scene.control.TableView;
 
-public class Average implements Time, Comparable<Solve> {
+public class Average implements Time, Comparable<Average> {
 	
 	private Solve[] solves;
 	private int numSolves;
@@ -15,7 +15,7 @@ public class Average implements Time, Comparable<Solve> {
 	private boolean isAverage;
 	private boolean dnfMatters;
 	
-	private double average;
+	public double average;
 	
 	public Average(Solve[] solves, boolean isAverage, boolean dnfMatters)
 	{
@@ -44,7 +44,7 @@ public class Average implements Time, Comparable<Solve> {
 		
 		if(isAverage)
 		{
-			numUncountedSolves = (int)((numSolves < 10) ? 1 : Math.round(numSolves * 0.05));
+			numUncountedSolves = (int)((this.numSolves < 10) ? 1 : Math.round(this.numSolves * 0.05));
 		} else numUncountedSolves = 0;
 		
 		average = getAverage();
@@ -69,11 +69,12 @@ public class Average implements Time, Comparable<Solve> {
 		return index;
 	}
 	
-	public double getAverage() //fix this
+	public double getAverage()
 	{
 		if(solves == null) return -1;
-
+		if(!dnfMatters) return getNoDNFMean();
 		
+		uncountedSolves.clear();
 		Solve[] countedSolves = new Solve[solves.length];
 		for(int i = 0; i < solves.length; i++) countedSolves[i] = solves[i];
 		Arrays.sort(countedSolves);
@@ -94,12 +95,27 @@ public class Average implements Time, Comparable<Solve> {
 		return mean;
 	}
 	
+	public double getNoDNFMean() {
+		
+		int numSolves = 0;
+		double mean = 0;
+		for(int i = 0; i < solves.length; i++) {
+			if(solves[i].solveStateProperty.get() != SolveState.DNF) {
+				numSolves++;
+				mean += solves[i].getRealTime();
+			}
+		}
+		mean /= numSolves;
+		this.numSolves = numSolves;
+		return mean;
+	}
+	
 	@Override
 	public String getDisplayedTime()
 	{
-		if(average == -1) return "-";
-		if(average == -2) return "DNF";
-		else return Stopwatch.formatTime(average);
+		if(getAverage() == -1) return "-";
+		if(getAverage() == -2) return "DNF";
+		else return Stopwatch.formatTime(getAverage());
 	}
 	
 	@Override
@@ -124,8 +140,22 @@ public class Average implements Time, Comparable<Solve> {
 	}
 
 	@Override
-	public int compareTo(Solve o) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int compareTo(Average o) {
+		if(getDisplayedTime().equals("DNF")) {
+			if(o.getDisplayedTime().equals("DNF"))
+				return 0;
+			else return Integer.MAX_VALUE;
+		} else if(o.getDisplayedTime().equals("DNF")) return Integer.MIN_VALUE;
+		if(getDisplayedTime().contentEquals("-")) {
+			if(o.getDisplayedTime().equals("-"))
+				return 0;
+			else return Integer.MAX_VALUE;
+		} else if(o.getDisplayedTime().equals("-")) return Integer.MIN_VALUE;
+		
+		if(o.getDisplayedTime().equals("-") && getDisplayedTime().equals("DNF"))
+			return 0;
+		if(getDisplayedTime().equals("-") && o.getDisplayedTime().equals("DNF"))
+			return 0;
+		return (int)(1000 * (getAverage() - o.getAverage()));
 	}
 }
