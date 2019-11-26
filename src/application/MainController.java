@@ -66,7 +66,7 @@ public class MainController implements Initializable{
 	@FXML private TableColumn<Solve, Solve> ao12;
 	@FXML private ChoiceBox<String> algCount;
 	
-	String[] options = {"Default", "7", "8", "9", "10", "11", "12", "13"};
+	String[] options = {"Default", "6", "7", "8", "9", "10", "11", "12", "13"};
 	
 	@FXML private Label accuracy;
 	@FXML private Label bestTime;
@@ -103,12 +103,7 @@ public class MainController implements Initializable{
 		
 		algCount.getItems().addAll(FXCollections.observableArrayList(options));
 		algCount.getSelectionModel().clearAndSelect(0);
-		setScramble(scrambleText);
-		dummyList = FXCollections.observableArrayList();
-		//dummyList.add(new Solve(1, 0.05, ""));
-		//dummyList.add(new Solve(2, 0.04, ""));
-		//dummyList.add(new Solve(3, 0.04, ""));
-		//for(int i = 0; i < 30000; i++) dummyList.add(new Solve(i+1,Math.random() * 10 + 120, ""));
+		setScramble();
 		popup = newPopup();
 		
 		solveNumber.setCellValueFactory(new PropertyValueFactory<Solve, Integer>("solveNumber"));
@@ -117,8 +112,8 @@ public class MainController implements Initializable{
 		ao5.setCellValueFactory(new PropertyValueFactory<Solve, Solve>("this"));
 		ao12.setCellValueFactory(new PropertyValueFactory<Solve, Solve>("this"));
 		
-		solveNumber.setSortable(false);
-		displayedTime.setSortable(false);
+		//solveNumber.setSortable(false);
+		//displayedTime.setSortable(false);
 		mo3.setSortable(false);
 		ao5.setSortable(false);
 		ao12.setSortable(false);
@@ -199,7 +194,7 @@ public class MainController implements Initializable{
 					timeList.getItems().add(new Solve(largestIndex + 1, st.getTime(), scrambleText.getText()));
 					timeList.getSelectionModel().select(largestIndex, solveNumber);
 					timeList.scrollTo(largestIndex);
-			        setScramble(scrambleText);
+			        setScramble();
 			        setSessionStats();
 			        st.stop();
 			        lockout = true;
@@ -245,7 +240,6 @@ public class MainController implements Initializable{
 			lockout = false;
 			if(spaceCombo.match(e)) 
 			{
-				//keyPressCount = 0;
 				timerLabel.setTextFill(Color.web("#000000"));
 				
 				if(!st.inSolvingPhase())
@@ -302,6 +296,10 @@ public class MainController implements Initializable{
 					timeList.getSelectionModel().select(timeList.getSelectionModel().getSelectedIndex() + 1);
 				} catch (IndexOutOfBoundsException error) {}
 			}
+		});
+		
+		algCount.getSelectionModel().selectedItemProperty().addListener((o, oldvalue, newValue) -> {
+			setScramble();
 		});
 	}
 	
@@ -442,19 +440,24 @@ public class MainController implements Initializable{
 		return button;
 	}
 	
-	private void setScramble(Text text)
+	private void setScramble()
 	{
-		try {
-            
-            URL url = new URL("http://localhost:2014/scramble/.txt?=333");
-            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-             
-            text.setText(in.readLine());
-            in.close();
-             
-        }
-        catch (MalformedURLException error) {}
-        catch (IOException error) {}
+		String choice = algCount.getSelectionModel().getSelectedItem();
+		if(choice.equals("Default")) {
+			try {
+	            
+	            URL url = new URL("http://localhost:2014/scramble/.txt?=333");
+	            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+	             
+	            scrambleText.setText(in.readLine());
+	            in.close();
+	             
+	        }
+	        catch (MalformedURLException error) {}
+	        catch (IOException error) {}
+		} else {
+			scrambleText.setText(Scrambler.genScramble(Integer.valueOf(choice)));
+		}
 	}
 	
 	public void setSessionStats()

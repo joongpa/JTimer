@@ -1,16 +1,9 @@
 package application;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Scanner;
 import java.util.stream.IntStream;
-
-import javafx.util.Pair;
 
 class Sides {
 	static final int YEL = 0;
@@ -1159,99 +1152,5 @@ public class Cube {
 			}
 		}
 		return null;
-	}
-	
-	public static void main(String[] args) {
-		double start = System.currentTimeMillis();
-		HashMap<Integer, Integer> distribution = new HashMap<Integer, Integer>();
-		distribution.put(5, 0);
-		distribution.put(6, 0);
-		distribution.put(7, 0);
-		distribution.put(8, 0);
-		distribution.put(9, 0);
-		distribution.put(10, 0);
-		distribution.put(11, 0);
-		distribution.put(12, 0);
-		distribution.put(13, 0);
-		distribution.put(14, 0);
-		
-		int[] cornerBuffer = {0,2,2};
-		int[] edgeBuffer = {0,2,1};
-		int[] otherThing = {0,1,2};
-		
-		Cube cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer, otherThing);
-		//cube.scrambleCube("B2 U B2 D' B2 R2 F R' U2 B2 D2 L' F2 U2 L D2 R ");
-		//System.out.println(cube.getAlgCount());
-		
-		
-		int total = 0;
-		int counter = 0;
-		File file = new File("C:\\Users\\Jeff Park\\PycharmProjects\\Cubing\\Scrambles.txt");
-		
-		try {
-	        Scanner sc = new Scanner(file);
-
-	        while (sc.hasNextLine()) {
-	            String scramble = sc.nextLine();
-	            scramble = scramble.replaceAll("(\\d+\\))", "");
-	            scramble = scramble.replaceAll("(.w.*)", "");
-	            cube.scrambleCube(scramble);
-	            int algs = cube.getAlgCount();
-	           // if(!cube.parity && cube.flips.size() == 0) {
-		            distribution.put(algs, distribution.get(algs) + 1);
-		            total += algs;
-		            counter++;
-	            //}
-		        //if(algs >= 13)
-		        //	System.out.println(scramble);
-	            cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer, otherThing);
-	        }
-	        sc.close();
-	    } 
-	    catch (FileNotFoundException e) {
-	        e.printStackTrace();
-	    }
-		for(Map.Entry<Integer, Integer> mapElement : distribution.entrySet()) {
-			System.out.println(mapElement.getKey() + ": " + mapElement.getValue());
-		}
-		System.out.println("total scrambles: " + counter);
-		System.out.println("Average alg count: " + (double)total/(double)counter);
-		
-		double time = (System.currentTimeMillis() - start) / 1000;
-		System.out.println(time);
-	}
-}
-
-class Scrambler {
-	static int length = 15;
-	static String[][] moves = {{"U", "U'", "U2", "D", "D'", "D2"},
-	                        {"R", "R'", "R2", "L", "L'", "L2"},
-	                        {"F", "F'", "F2", "B", "B'", "B2"}};
-	
-	public static String genScramble() {
-		String scramble = "";
-		int lastFirstIndex = -1;
-		int firstIndex;
-		int secondIndex;
-		
-		for(int i = 0; i < length; i++) {
-			firstIndex = getRandomWithExclusion(0, 2, lastFirstIndex);
-			secondIndex = (int)(Math.random() * 6);
-			lastFirstIndex = firstIndex;
-			scramble += moves[firstIndex][secondIndex] + " ";
-		}
-		return scramble;
-	}
-	
-	public static int getRandomWithExclusion(int start, int end, int... exclude) {
-		Random rnd = new Random();
-	    int random = start + rnd.nextInt(end - start + 1 - exclude.length);
-	    for (int ex : exclude) {
-	        if (random < ex) {
-	            break;
-	        }
-	        random++;
-	    }
-	    return random;
 	}
 }
