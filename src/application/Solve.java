@@ -14,10 +14,11 @@ public class Solve implements Comparable<Solve>, Time {
 	public Average mo3;
 	public Average ao5;
 	public Average ao12;
+	public int numAlgs;
 	
 	public ObjectProperty<SolveState> solveStateProperty;
 	
-	public Solve(Integer solveNumber, Double realTime, String scramble) {
+	public Solve(Integer solveNumber, Double realTime, String scramble, int numAlgs) {
 		super();
 		solveStateProperty = new SimpleObjectProperty<SolveState>(SolveState.OK);
 		
@@ -25,6 +26,7 @@ public class Solve implements Comparable<Solve>, Time {
 		this.realTime = new SimpleDoubleProperty(realTime);
 		this.displayedTime = new SimpleStringProperty();
 		this.scramble = scramble;
+		this.numAlgs = numAlgs;
 		resetDisplay();
 		
 		solveStateProperty.addListener((o, oldval, newVal) -> {

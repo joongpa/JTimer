@@ -154,13 +154,19 @@
             </VBox>
             <GridPane prefHeight="339.0" prefWidth="787.0" GridPane.rowIndex="1">
               <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="384.0" minWidth="10.0" prefWidth="84.33331553141275" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="725.9999618530273" minWidth="10.0" prefWidth="702.3333511352539" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="116.66665140787757" minWidth="24.000015258789062" prefWidth="51.333292643229186" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="188.66670735677081" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="725.9999618530273" minWidth="10.0" prefWidth="362.66666666666663" />
               </columnConstraints>
               <rowConstraints>
-                <RowConstraints maxHeight="77.6666488647461" minHeight="0.0" prefHeight="33.888895670572914" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="190.0" minHeight="0.0" prefHeight="48.77777099609374" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="234.6666488647461" minHeight="10.0" prefHeight="125.00002034505206" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="77.6666488647461" minHeight="30.0" prefHeight="35.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="190.0" minHeight="35.0" prefHeight="35.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="190.0" minHeight="35.0" prefHeight="34.99997965494792" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="190.0" minHeight="35.0" prefHeight="34.99997965494792" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="234.6666488647461" minHeight="10.0" prefHeight="109.00002034505206" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="234.6666488647461" minHeight="10.0" prefHeight="109.00002034505206" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
                   <Label text="Settings">
@@ -173,6 +179,24 @@
                   </Label>
                   <Label text="Alg Count" textFill="#7c7c7c" GridPane.rowIndex="1" />
                   <ChoiceBox fx:id="algCount" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Label text="Corner Buffer" textFill="#7c7c7c" GridPane.rowIndex="2" />
+                  <Label text="Edge Buffer" textFill="#7c7c7c" GridPane.rowIndex="3" />
+                  <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <Label text="Solve Info" GridPane.columnIndex="3">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                     <padding>
+                        <Insets top="10.0" />
+                     </padding>
+                  </Label>
+                  <Label text="Alg Count" textFill="#7c7c7c" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                  <Label text="DNF Avg" textFill="#7c7c7c" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                  <Label text="Success Avg" textFill="#7c7c7c" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                  <Label fx:id="algDisplay" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                  <Label fx:id="dnfAlgs" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                  <Label fx:id="succAlgs" GridPane.columnIndex="4" GridPane.rowIndex="3" />
                </children>
             </GridPane>
             <GridPane GridPane.columnIndex="1" GridPane.rowIndex="1">

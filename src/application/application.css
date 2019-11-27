@@ -61,11 +61,15 @@
 	-fx-font-size: 18;
 	-fx-padding: 20 20 20 20;
 	-fx-alignment: TOP_LEFT;
-	-fx-border-width: 5;
-	-fx-border-color: rgb(222, 239, 255);
 	-fx-background-color: WHITE;
-	-fx-background-radius: 20 20 20 20;
-	-fx-border-radius: 10 10 10 10;
+}
+
+.popup .text-area {
+	-fx-opacity: 1;
+	-fx-font-size: 20;
+	-fx-margins: 20 20 20 20;
+	-fx-alignment: TOP_LEFT;
+	-fx-background-color: WHITE;
 }
 
 .table-row-cell .button {

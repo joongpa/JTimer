@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.IntSummaryStatistics;
 import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 import java.util.Scanner;
@@ -34,9 +35,13 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -55,6 +60,10 @@ public class MainController implements Initializable{
 	//private Puzzle puzzle = new ThreeByThreeCubePuzzle();
 	private Popup popup;
 	
+	@FXML private Label algDisplay;
+	@FXML private Label dnfAlgs;
+	@FXML private Label succAlgs;
+	
 	@FXML private Text scrambleText;
 	@FXML private Parent root;
 	@FXML private Label timerLabel;
@@ -67,6 +76,9 @@ public class MainController implements Initializable{
 	@FXML private ChoiceBox<String> algCount;
 	
 	String[] options = {"Default", "6", "7", "8", "9", "10", "11", "12", "13"};
+	//String[] cornerBufferOptions = {"UBL", "UFR", "UBR", "UFL", "DFR", "DFL", "DBR", "DBL"};
+	//String[] edgeBufferOptions = {"UF", "UB", "UR", "UL", "DF", "DR", "DL", "DB", "FR", "FL", "BR", "BL"};
+	
 	
 	@FXML private Label accuracy;
 	@FXML private Label bestTime;
@@ -95,7 +107,8 @@ public class MainController implements Initializable{
 	private boolean ready = false;
 	boolean lockout = false;
 
-
+	int currentAlgCount;
+	
 	ObservableList<Solve> dummyList;
 
 	@Override
@@ -103,7 +116,7 @@ public class MainController implements Initializable{
 		
 		algCount.getItems().addAll(FXCollections.observableArrayList(options));
 		algCount.getSelectionModel().clearAndSelect(0);
-		setScramble();
+		currentAlgCount = setScramble();
 		popup = newPopup();
 		
 		solveNumber.setCellValueFactory(new PropertyValueFactory<Solve, Integer>("solveNumber"));
@@ -191,10 +204,10 @@ public class MainController implements Initializable{
 				if(keyPressCount == 1) {
 					st.pause();
 					int largestIndex = timeList.getItems().size();
-					timeList.getItems().add(new Solve(largestIndex + 1, st.getTime(), scrambleText.getText()));
+					timeList.getItems().add(new Solve(largestIndex + 1, st.getTime(), scrambleText.getText(), currentAlgCount));
 					timeList.getSelectionModel().select(largestIndex, solveNumber);
 					timeList.scrollTo(largestIndex);
-			        setScramble();
+			        currentAlgCount = setScramble();
 			        setSessionStats();
 			        st.stop();
 			        lockout = true;
@@ -203,7 +216,7 @@ public class MainController implements Initializable{
 				keyPressCount++;
 				if(keyPressCount == 1)
 					delay.start();
-				if(delay.getTime() > -10.0 && !lockout){
+				if(delay.getTime() > 0 && !lockout){
 					st.reset();
 					timerLabel.setTextFill(Color.web("#00DD00"));
 					ready = true;
@@ -299,7 +312,11 @@ public class MainController implements Initializable{
 		});
 		
 		algCount.getSelectionModel().selectedItemProperty().addListener((o, oldvalue, newValue) -> {
-			setScramble();
+			currentAlgCount = setScramble();
+		});
+		
+		timeList.getSelectionModel().selectedItemProperty().addListener((o, oldvalue, newValue) -> {
+			algDisplay.setText(String.valueOf(newValue.numAlgs));
 		});
 	}
 	
@@ -368,12 +385,33 @@ public class MainController implements Initializable{
 		return popup;
 	}
 	
-	public Label newTimeInfoLabel(String string)
+	public TextArea newTimeInfoLabel(String string)
 	{
-		Label timeInfoLabel = new Label(string);
-		timeInfoLabel.setMinSize(700, 400);
-		return timeInfoLabel;
+		TextArea ta = new TextArea();
+		ta.setEditable(false);
+		ta.setText(string);
+		ta.setPrefSize(700, 400);
+		ta.selectAll();
+		
+		ta.setCache(false);
+		/*ScrollPane sp = (ScrollPane)ta.getChildrenUnmodifiable().get(0);
+		sp.setCache(false);
+		for (Node n : sp.getChildrenUnmodifiable()) {
+		    n.setCache(false);
+		}
+		return ta;*/
+		return ta;
 	}
+	
+	/*public ScrollPane getTimeScrollPane() {
+		ScrollPane sp = new ScrollPane();
+		sp.setPrefWidth(700);
+		sp.setPrefHeight(400);
+		sp.setHbarPolicy(ScrollBarPolicy.NEVER);
+		sp.setFitToWidth(true);
+		
+		return sp;
+	}*/
 	
 	private void avgUpdate(ButtonCell cell, Average item, boolean empty)
 	{
@@ -419,6 +457,8 @@ public class MainController implements Initializable{
 		else button.setTextFill(Color.BLACK);
 		button.setOnAction(e -> {
 			popup.getContent().removeAll(popup.getContent());
+			popup.setX(30);
+			popup.setY(100);
 			popup.getContent().add(newTimeInfoLabel(item.toString() + "   " + item.getScramble()));
 			popup.show(Main.primaryStage);
 		});
@@ -434,14 +474,17 @@ public class MainController implements Initializable{
 		else button.setTextFill(Color.BLACK);
 		button.setOnAction(e -> {
 			popup.getContent().removeAll(popup.getContent());
+			popup.setX(30);
+			popup.setY(100);
 			popup.getContent().add(newTimeInfoLabel(item.toString()));
 			popup.show(Main.primaryStage);
 		});
 		return button;
 	}
 	
-	private void setScramble()
+	private int setScramble()
 	{
+		int numAlgs = 0;
 		String choice = algCount.getSelectionModel().getSelectedItem();
 		if(choice.equals("Default")) {
 			try {
@@ -449,15 +492,23 @@ public class MainController implements Initializable{
 	            URL url = new URL("http://localhost:2014/scramble/.txt?=333");
 	            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
 	             
-	            scrambleText.setText(in.readLine());
+	            String scramble = in.readLine();
+	            scrambleText.setText(scramble);
+	            numAlgs = Scrambler.getAlgCount(scramble);
 	            in.close();
 	             
 	        }
-	        catch (MalformedURLException error) {}
-	        catch (IOException error) {}
+	        catch (MalformedURLException error) {
+	            error.printStackTrace();
+	        }
+	        catch (IOException error) {
+	            error.printStackTrace();
+	        }
 		} else {
 			scrambleText.setText(Scrambler.genScramble(Integer.valueOf(choice)));
+			numAlgs = Integer.valueOf(choice);
 		}
+		return numAlgs;
 	}
 	
 	public void setSessionStats()
@@ -471,6 +522,28 @@ public class MainController implements Initializable{
 		}
 		int rate = (int)(100 * ((double)successes/timeList.getItems().size()));
 		accuracy.setText(rate + "%   " + successes + "/" + timeList.getItems().size());
+		
+		IntSummaryStatistics dnfStats = Arrays.stream(solveList)
+										  .filter(s -> s.solveStateProperty.get() == SolveState.DNF)
+										  .mapToInt(s -> s.numAlgs)
+										  .summaryStatistics();
+		
+		if(dnfStats.getAverage() == 0.0)
+			dnfAlgs.setText("-");
+		else 
+			dnfAlgs.setText(String.format("%.2f", dnfStats.getAverage()));
+		
+		IntSummaryStatistics succStats = Arrays.stream(solveList)
+				  .filter(s -> s.solveStateProperty.get() != SolveState.DNF)
+				  .mapToInt(s -> s.numAlgs)
+				  .summaryStatistics();
+
+		if(succStats.getAverage() == 0.0) 
+			succAlgs.setText("-");
+		else
+			succAlgs.setText(String.format("%.2f", succStats.getAverage()));
+		
+		
 		
 		if(solveList.length > 0) {
 			TimeComparator tc = new TimeComparator();
@@ -526,6 +599,9 @@ public class MainController implements Initializable{
 		bestMean.setGraphic(null);
 		bestAverage5.setGraphic(null);
 		bestAverage12.setGraphic(null);
+		algDisplay.setText(null);
+		dnfAlgs.setText(null);
+		succAlgs.setText(null);
 	}
 	
 }

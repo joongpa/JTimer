@@ -8,6 +8,15 @@ public class Scrambler {
 	                        {"R", "R'", "R2", "L", "L'", "L2"},
 	                        {"F", "F'", "F2", "B", "B'", "B2"}};
 	
+	public static int getAlgCount(String scramble) {
+		int[] cornerBuffer = {0,2,2};
+		int[] edgeBuffer = {0,2,1};
+		int[] thing = {0,1,2};
+		Cube cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer, thing);
+		cube.scrambleCube(scramble);
+		return cube.getAlgCount();
+	}
+	
 	public static String genScramble(int algCount) {
 		int[] cornerBuffer = {0,2,2};
 		int[] edgeBuffer = {0,2,1};
@@ -45,7 +54,7 @@ public class Scrambler {
 		return scramble;
 	}
 	
-	public static int getRandomWithExclusion(int start, int end, int... exclude) {
+	private static int getRandomWithExclusion(int start, int end, int... exclude) {
 		Random rnd = new Random();
 	    int random = start + rnd.nextInt(end - start + 1 - exclude.length);
 	    for (int ex : exclude) {
