@@ -75,3 +75,11 @@
 .table-row-cell .button {
 	
 }
+
+.scroll-bar .thumb {
+	-fx-background-color: #808080;
+}
+
+.scroll-bar {
+	-fx-background-color: #f0f0f0;
+}
