@@ -53,7 +53,6 @@ public class MainController implements Initializable{
 	
 	private Popup popup;
 	
-	
 	@FXML private BarChart<String, Integer> barChart;
 	@FXML private CategoryAxis xAxis;
 	@FXML private NumberAxis yAxis;
@@ -72,11 +71,16 @@ public class MainController implements Initializable{
 	@FXML private TableColumn<Solve, Solve> mo3;
 	@FXML private TableColumn<Solve, Solve> ao5;
 	@FXML private TableColumn<Solve, Solve> ao12;
+	
 	@FXML private ChoiceBox<String> algCount;
+	@FXML private ChoiceBox<String> cornerBufferChoiceBox;
+	@FXML private ChoiceBox<String> edgeBufferChoiceBox;
+	@FXML private ChoiceBox<String> parity1;
+	@FXML private ChoiceBox<String> parity2;
 	
 	String[] options = {"Default", "6", "7", "8", "9", "10", "11", "12", "13"};
-	//String[] cornerBufferOptions = {"UBL", "UFR", "UBR", "UFL", "DFR", "DFL", "DBR", "DBL"};
-	//String[] edgeBufferOptions = {"UF", "UB", "UR", "UL", "DF", "DR", "DL", "DB", "FR", "FL", "BR", "BL"};
+	String[] cornerBufferOptions = {"UBL", "UFR", "UBR", "UFL", "DFR", "DFL", "DBR", "DBL"};
+	String[] edgeBufferOptions = {"UF", "UB", "UR", "UL", "DF", "DR", "DL", "DB", "FR", "FL", "BR", "BL"};
 	
 	
 	@FXML private Label accuracy;
@@ -116,7 +120,12 @@ public class MainController implements Initializable{
 				   "8", "9", "10", "11", "12")));
 		
 		algCount.getItems().addAll(FXCollections.observableArrayList(options));
+		cornerBufferChoiceBox.getItems().addAll(FXCollections.observableArrayList(cornerBufferOptions));
+		edgeBufferChoiceBox.getItems().addAll(FXCollections.observableArrayList(edgeBufferOptions));
+		parity1.getItems().addAll(FXCollections.observableArrayList(edgeBufferOptions));
+		parity2.getItems().addAll(FXCollections.observableArrayList(edgeBufferOptions));
 		algCount.getSelectionModel().clearAndSelect(0);
+		
 		currentAlgCount = setScramble();
 		popup = newPopup();
 		

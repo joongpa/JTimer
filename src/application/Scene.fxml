@@ -121,8 +121,8 @@
                         <ChoiceBox fx:id="algCount" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                         <Label text="Corner Buffer" textFill="#7c7c7c" GridPane.rowIndex="6" />
                         <Label text="Edge Buffer" textFill="#7c7c7c" GridPane.rowIndex="7" />
-                        <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                        <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                        <ChoiceBox fx:id="cornerBufferChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                        <ChoiceBox fx:id="edgeBufferChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
                         <Label text="Alg Stats">
                            <font>
                               <Font name="System Bold" size="12.0" />
@@ -137,6 +137,7 @@
                         <Label fx:id="algDisplay" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label fx:id="dnfAlgs" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                         <Label fx:id="succAlgs" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label text="Parity Edges" textFill="#7c7c7c" GridPane.rowIndex="8" />
                         <BarChart fx:id="barChart" animated="false" barGap="0.0" categoryGap="0.0" legendSide="LEFT" legendVisible="false" prefHeight="319.0" prefWidth="255.0" GridPane.columnIndex="3" GridPane.rowSpan="9">
                           <xAxis>
                             <CategoryAxis autoRanging="false" label="Algs" side="BOTTOM" fx:id="xAxis" />
@@ -145,6 +146,12 @@
                             <NumberAxis fx:id="yAxis" autoRanging="false" label="Success Rate (%)" minorTickLength="0.0" minorTickVisible="false" side="LEFT" tickLength="5.0" tickUnit="10.0" />
                           </yAxis>
                         </BarChart>
+                        <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
+                           <children>
+                              <ChoiceBox fx:id="parity1" prefWidth="150.0" />
+                              <ChoiceBox fx:id="parity2" prefWidth="150.0" />
+                           </children>
+                        </HBox>
                      </children>
                      <VBox.margin>
                         <Insets right="20.0" />
