@@ -2,6 +2,9 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
@@ -62,20 +65,94 @@
         </Menu>
       </menus>
     </MenuBar>
-      <GridPane hgap="20.0" prefHeight="695.0" prefWidth="749.0" VBox.vgrow="ALWAYS">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" maxWidth="1023.9999389648438" minWidth="10.0" prefWidth="697.3333740234375" />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="610.0000305175781" minWidth="0.0" prefWidth="344.6666259765625" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints maxHeight="462.7778015136719" minHeight="10.0" prefHeight="442.3333435058594" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="313.44439697265625" minHeight="10.0" prefHeight="207.66665649414062" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-         </padding>
+      <HBox prefHeight="691.0" prefWidth="1280.0">
          <children>
-            <VBox fillWidth="false" prefHeight="425.0" prefWidth="434.0" GridPane.columnIndex="1">
+            <VBox alignment="TOP_CENTER" prefHeight="665.0" prefWidth="826.0" spacing="10.0">
+               <children>
+                  <GridPane alignment="CENTER" prefHeight="341.0" prefWidth="823.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Label fx:id="timerLabel" alignment="CENTER" prefHeight="206.0" prefWidth="698.0" text="12:34.78" textOverrun="CLIP" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                           <font>
+                              <Font name="Monospaced Regular" size="125.0" />
+                           </font>
+                        </Label>
+                        <Text fx:id="scrambleText" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="B2 F2 U' R2 D F2 R2 U2 F2 R2 D2 U L D2 U' B F D' B' L U' Rw'" textAlignment="CENTER" textOrigin="TOP" wrappingWidth="700.0" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                           <font>
+                              <Font size="35.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </GridPane>
+                  <GridPane prefHeight="234.0" prefWidth="823.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="725.9999618530273" minWidth="10.0" prefWidth="354.777852376302" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="725.9999618530273" minWidth="10.0" prefWidth="247.88881429036462" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints maxHeight="234.6666488647461" minHeight="10.0" percentHeight="11.11" prefHeight="109.00002034505206" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="234.6666488647461" minHeight="10.0" percentHeight="11.11" prefHeight="109.00002034505206" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="234.6666488647461" minHeight="10.0" percentHeight="11.11" prefHeight="109.00002034505206" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="234.6666488647461" minHeight="10.0" percentHeight="11.11" prefHeight="109.00002034505206" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="77.6666488647461" minHeight="30.0" percentHeight="11.11" prefHeight="80.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="190.0" minHeight="35.0" percentHeight="11.11" prefHeight="80.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="190.0" minHeight="35.0" percentHeight="11.11" prefHeight="80.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="190.0" minHeight="35.0" percentHeight="11.11" prefHeight="80.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="234.6666488647461" minHeight="10.0" percentHeight="11.11" prefHeight="100.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Label text="Settings" GridPane.rowIndex="4">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                           <padding>
+                              <Insets top="10.0" />
+                           </padding>
+                        </Label>
+                        <Label text="Alg Count" textFill="#7c7c7c" GridPane.rowIndex="5" />
+                        <ChoiceBox fx:id="algCount" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                        <Label text="Corner Buffer" textFill="#7c7c7c" GridPane.rowIndex="6" />
+                        <Label text="Edge Buffer" textFill="#7c7c7c" GridPane.rowIndex="7" />
+                        <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                        <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                        <Label text="Alg Stats">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                           <padding>
+                              <Insets top="10.0" />
+                           </padding>
+                        </Label>
+                        <Label text="Selected Time" textFill="#7c7c7c" GridPane.rowIndex="1" />
+                        <Label text="DNF Avg" textFill="#7c7c7c" GridPane.rowIndex="3" />
+                        <Label text="Success Avg" textFill="#7c7c7c" GridPane.rowIndex="2" />
+                        <Label fx:id="algDisplay" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label fx:id="dnfAlgs" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label fx:id="succAlgs" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <BarChart fx:id="barChart" animated="false" barGap="0.0" categoryGap="0.0" legendSide="LEFT" legendVisible="false" prefHeight="319.0" prefWidth="255.0" GridPane.columnIndex="3" GridPane.rowSpan="9">
+                          <xAxis>
+                            <CategoryAxis autoRanging="false" label="Algs" side="BOTTOM" fx:id="xAxis" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis fx:id="yAxis" autoRanging="false" label="Success Rate" minorTickLength="0.0" minorTickVisible="false" side="LEFT" tickLength="5.0" tickUnit="10.0" />
+                          </yAxis>
+                        </BarChart>
+                     </children>
+                     <VBox.margin>
+                        <Insets right="20.0" />
+                     </VBox.margin>
+                  </GridPane>
+               </children>
+            </VBox>
+            <VBox fillWidth="false" prefHeight="665.0" prefWidth="419.0">
                <children>
                   <HBox alignment="CENTER_LEFT" prefHeight="43.0" prefWidth="413.0" spacing="10.0">
                      <children>
@@ -124,7 +201,7 @@
                         <Insets bottom="10.0" />
                      </padding>
                   </HBox>
-                  <TableView fx:id="timeList" prefHeight="399.0" prefWidth="413.0">
+                  <TableView fx:id="timeList" prefHeight="414.0" prefWidth="415.0">
                     <columns>
                       <TableColumn fx:id="solveNumber" prefWidth="45.0" style="-fx-text-fill: #808080;" />
                       <TableColumn fx:id="displayedTime" prefWidth="110.0" style="-fx-alignment: CENTER;" text="Time" />
@@ -136,110 +213,52 @@
                         <Insets right="2.0" />
                      </VBox.margin>
                   </TableView>
+                  <GridPane>
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="139.11121368408203" minWidth="10.0" prefWidth="122.00002034505208" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="97.77773793538412" minWidth="10.0" prefWidth="97.11104329427083" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="93.77783203125" minWidth="10.0" prefWidth="82.2222900390625" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Label prefHeight="17.0" prefWidth="82.0" text="Accuracy:" textFill="#7c7c7c" GridPane.rowIndex="1" />
+                        <Label prefHeight="17.0" prefWidth="82.0" text="Mean:" textFill="#7c7c7c" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                        <Label prefHeight="17.0" prefWidth="82.0" text="Best Time:" textFill="#7c7c7c" GridPane.rowIndex="2" />
+                        <Label prefHeight="17.0" prefWidth="82.0" text="Best Mean of 3:" textFill="#7c7c7c" GridPane.rowIndex="3" />
+                        <Label prefHeight="17.0" prefWidth="114.0" text="Best Average of 5:" textFill="#7c7c7c" GridPane.rowIndex="4" />
+                        <Label prefHeight="17.0" prefWidth="82.0" text="Average:" textFill="#7c7c7c" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                        <Label fx:id="accuracy" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label fx:id="bestTime" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label fx:id="bestMean" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label fx:id="bestAverage5" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <Label fx:id="mean" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                        <Label fx:id="average" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                        <Label prefHeight="17.0" prefWidth="114.0" text="Best Average of 12:" textFill="#7c7c7c" GridPane.rowIndex="5" />
+                        <Label fx:id="bestAverage12" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                        <Label text="Session Stats">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                           <padding>
+                              <Insets top="10.0" />
+                           </padding>
+                        </Label>
+                     </children>
+                  </GridPane>
                </children>
             </VBox>
-            <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
-               <children>
-                  <Text fx:id="scrambleText" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" text="B2 F2 U' R2 D F2 R2 U2 F2 R2 D2 U L D2 U' B F D' B' L U' Rw'" textAlignment="CENTER" textOrigin="TOP" wrappingWidth="676.3587417602539">
-                     <font>
-                        <Font size="35.0" />
-                     </font>
-                  </Text>
-                  <Label fx:id="timerLabel" alignment="CENTER" prefHeight="206.0" prefWidth="698.0" text="12:34.78" textOverrun="CLIP">
-                     <font>
-                        <Font name="Monospaced Regular" size="125.0" />
-                     </font>
-                  </Label>
-               </children>
-            </VBox>
-            <GridPane prefHeight="339.0" prefWidth="787.0" GridPane.rowIndex="1">
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="116.66665140787757" minWidth="24.000015258789062" prefWidth="51.333292643229186" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="188.66670735677081" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="725.9999618530273" minWidth="10.0" prefWidth="362.66666666666663" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints maxHeight="77.6666488647461" minHeight="30.0" prefHeight="35.0" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="190.0" minHeight="35.0" prefHeight="35.0" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="190.0" minHeight="35.0" prefHeight="34.99997965494792" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="190.0" minHeight="35.0" prefHeight="34.99997965494792" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="234.6666488647461" minHeight="10.0" prefHeight="109.00002034505206" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="234.6666488647461" minHeight="10.0" prefHeight="109.00002034505206" vgrow="SOMETIMES" />
-              </rowConstraints>
-               <children>
-                  <Label text="Settings">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                     <padding>
-                        <Insets top="10.0" />
-                     </padding>
-                  </Label>
-                  <Label text="Alg Count" textFill="#7c7c7c" GridPane.rowIndex="1" />
-                  <ChoiceBox fx:id="algCount" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <Label text="Corner Buffer" textFill="#7c7c7c" GridPane.rowIndex="2" />
-                  <Label text="Edge Buffer" textFill="#7c7c7c" GridPane.rowIndex="3" />
-                  <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <ChoiceBox prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                  <Label text="Solve Info" GridPane.columnIndex="3">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                     <padding>
-                        <Insets top="10.0" />
-                     </padding>
-                  </Label>
-                  <Label text="Alg Count" textFill="#7c7c7c" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                  <Label text="DNF Avg" textFill="#7c7c7c" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-                  <Label text="Success Avg" textFill="#7c7c7c" GridPane.columnIndex="3" GridPane.rowIndex="3" />
-                  <Label fx:id="algDisplay" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                  <Label fx:id="dnfAlgs" GridPane.columnIndex="4" GridPane.rowIndex="2" />
-                  <Label fx:id="succAlgs" GridPane.columnIndex="4" GridPane.rowIndex="3" />
-               </children>
-            </GridPane>
-            <GridPane GridPane.columnIndex="1" GridPane.rowIndex="1">
-               <columnConstraints>
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="139.11121368408203" minWidth="10.0" prefWidth="122.00002034505208" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="97.77773793538412" minWidth="10.0" prefWidth="97.11104329427083" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="93.77783203125" minWidth="10.0" prefWidth="82.2222900390625" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-               </columnConstraints>
-               <rowConstraints>
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-               </rowConstraints>
-               <children>
-                  <Label prefHeight="17.0" prefWidth="82.0" text="Accuracy:" textFill="#7c7c7c" GridPane.rowIndex="1" />
-                  <Label prefHeight="17.0" prefWidth="82.0" text="Mean:" textFill="#7c7c7c" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                  <Label prefHeight="17.0" prefWidth="82.0" text="Best Time:" textFill="#7c7c7c" GridPane.rowIndex="2" />
-                  <Label prefHeight="17.0" prefWidth="82.0" text="Best Mean of 3:" textFill="#7c7c7c" GridPane.rowIndex="3" />
-                  <Label prefHeight="17.0" prefWidth="114.0" text="Best Average of 5:" textFill="#7c7c7c" GridPane.rowIndex="4" />
-                  <Label prefHeight="17.0" prefWidth="82.0" text="Average:" textFill="#7c7c7c" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                  <Label fx:id="accuracy" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <Label fx:id="bestTime" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <Label fx:id="bestMean" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                  <Label fx:id="bestAverage5" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                  <Label fx:id="mean" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                  <Label fx:id="average" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-                  <Label prefHeight="17.0" prefWidth="114.0" text="Best Average of 12:" textFill="#7c7c7c" GridPane.rowIndex="5" />
-                  <Label fx:id="bestAverage12" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                  <Label text="Session Stats">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                     <padding>
-                        <Insets top="10.0" />
-                     </padding>
-                  </Label>
-               </children>
-            </GridPane>
          </children>
-      </GridPane>
+         <VBox.margin>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+         </VBox.margin>
+      </HBox>
   </children>
 </VBox>

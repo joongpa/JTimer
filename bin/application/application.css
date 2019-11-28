@@ -83,3 +83,8 @@
 .scroll-bar {
 	-fx-background-color: #f0f0f0;
 }
+
+.chart-bar {
+	-fx-bar-fill: #00a5cf;
+	-fx-bar-gill: #00a5cf;
+}

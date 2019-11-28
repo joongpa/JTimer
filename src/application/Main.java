@@ -1,5 +1,7 @@
 package application;
 
+import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
@@ -21,19 +23,13 @@ public class Main extends Application {
 			primaryStage.setTitle("Jtimer Pre-alpha");
 			primaryStage.setScene(scene);
 			primaryStage.show();
-			
-			//popupInit();
-			
 
-			
-			
-			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		launch(args);
 	}
 }

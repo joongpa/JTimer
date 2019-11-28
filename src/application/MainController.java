@@ -1,7 +1,18 @@
 /*
  * To-do list:
+ * - Time per alg graph
+ * - Add other buffer support
+ * - Letter pair tracing (until a cycle break)
+ * - Separate page for categorizing solves
+ * - Options to categorize solve by "Corner Memory Related", "Edge Memory Related", and "Execution Related"
+ * - Page to enter letter scheme
  * - Progress bar that shows how long spacebar must be held for
- * - <LAST PRIORITY> Stackmat input
+ * - Style stuff to not be default javafx look
+ * - <LAST PRIORITY> Stackmat and Typing input
+ * 
+ * 
+ * Bugs:
+ * - Timer occasionally does not stop (Cause unclear)
 */
 package application;
 
@@ -15,6 +26,10 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
@@ -36,6 +51,12 @@ import net.gnehzr.tnoodle.scrambles.Puzzle;
 public class MainController implements Initializable{
 	
 	private Popup popup;
+	
+	
+	@FXML private BarChart<String, Integer> barChart;
+	@FXML private CategoryAxis xAxis;
+	@FXML private NumberAxis yAxis;
+	private XYChart.Series<String, Integer> series;
 	
 	@FXML private Label algDisplay;
 	@FXML private Label dnfAlgs;
@@ -65,8 +86,6 @@ public class MainController implements Initializable{
 	@FXML private Label mean;
 	@FXML private Label average;
 	
-
-	//private Timeline timeline;
 	private int keyPressCount = 0;
 	
 	//hotkeys
@@ -90,17 +109,20 @@ public class MainController implements Initializable{
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
+	
+		series = new XYChart.Series<>();
+		xAxis.setCategories(FXCollections.<String>observableArrayList(Arrays.asList(
+				   "8", "9", "10", "11", "12")));
 		
 		algCount.getItems().addAll(FXCollections.observableArrayList(options));
 		algCount.getSelectionModel().clearAndSelect(0);
 		currentAlgCount = setScramble();
 		popup = newPopup();
 		
-		
-		Solve[] tester = new Solve[30];
-		for(int i = 0; i < 30; i++) tester[i] = new Solve(i+1, 20.0, "", 10);
-		ObservableList<Solve> dummyList = FXCollections.observableArrayList(tester);
-		timeList.setItems(dummyList);
+		//Solve[] tester = new Solve[30];
+		//for(int i = 0; i < 30; i++) tester[i] = new Solve(i+1, 20.0, "", 10);
+		//ObservableList<Solve> dummyList = FXCollections.observableArrayList(tester);
+		//timeList.setItems(dummyList);
 		
 		solveNumber.setCellValueFactory(new PropertyValueFactory<Solve, Integer>("solveNumber"));
 		displayedTime.setCellValueFactory(new PropertyValueFactory<Solve, Solve>("this"));
@@ -202,29 +224,6 @@ public class MainController implements Initializable{
 					ready = true;
 				}
 			}
-			/*if(spaceCombo.match(e))
-			{
-				keyPressCount++;
-				if(keyPressCount == 1)
-				{
-					if(st.inSolvingPhase())
-					{
-						st.pause();
-						int largestIndex = timeList.getItems().size();
-						timeList.getItems().add(new Solve(largestIndex + 1, st.getTime(), scrambleText.getText()));
-						timeList.getSelectionModel().select(largestIndex, solveNumber);
-						timeList.scrollTo(largestIndex);
-				        setScramble(scrambleText);
-				        setSessionStats();
-					} else {
-						delay.start();
-					}
-				} else if(delay.getTime() > 0.3 && !st.inSolvingPhase()){
-					st.reset();
-					timerLabel.setTextFill(Color.web("#00DD00"));
-					ready = true;
-				}
-			}*/
 			e.consume();
 		});
 		
@@ -534,6 +533,27 @@ public class MainController implements Initializable{
 			Button avgButton = getAvgTimeButton(avg1);
 			average.setGraphic(avgButton);
 		}
+		setAlgAccuracy(solveList);
+	}
+	
+	public void setAlgAccuracy(Solve[] solveList) {
+		
+		double[] algAverages = new double[xAxis.getCategories().size()]; 
+		for(int i = 0; i < algAverages.length; i++) {
+			algAverages[i] = getAlgAverage(i + 8, solveList);
+			series.getData().add(new XYChart.Data<String, Integer>(String.valueOf(i + 8), (int)algAverages[i]));
+		}
+		
+		barChart.getData().addAll(series);
+	}
+	
+	public double getAlgAverage(int alg, Solve[] solveList) {
+		double successes = (double)Arrays.stream(solveList).filter(s -> s.solveStateProperty.get() != SolveState.DNF)
+												  .filter(s -> s.numAlgs == alg)
+												  .count();
+		double total = (double)Arrays.stream(solveList).filter(s -> s.numAlgs == alg).count();
+	
+		return 100 * (successes/total);
 	}
 	
 	class ButtonCell extends TableCell<Solve, Solve> {
