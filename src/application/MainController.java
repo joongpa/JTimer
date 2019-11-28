@@ -1,13 +1,14 @@
 /*
  * To-do list:
- * - Time per alg graph
  * - Add other buffer support
+ * - Add floating support
  * - Letter pair tracing (until a cycle break)
  * - Separate page for categorizing solves
  * - Options to categorize solve by "Corner Memory Related", "Edge Memory Related", and "Execution Related"
  * - Page to enter letter scheme
  * - Progress bar that shows how long spacebar must be held for
  * - Style stuff to not be default javafx look
+ * - Switch to Maven so everything can be packaged neatly
  * - <LAST PRIORITY> Stackmat and Typing input
  * 
  * 

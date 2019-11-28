@@ -142,7 +142,7 @@
                             <CategoryAxis autoRanging="false" label="Algs" side="BOTTOM" fx:id="xAxis" />
                           </xAxis>
                           <yAxis>
-                            <NumberAxis fx:id="yAxis" autoRanging="false" label="Success Rate" minorTickLength="0.0" minorTickVisible="false" side="LEFT" tickLength="5.0" tickUnit="10.0" />
+                            <NumberAxis fx:id="yAxis" autoRanging="false" label="Success Rate (%)" minorTickLength="0.0" minorTickVisible="false" side="LEFT" tickLength="5.0" tickUnit="10.0" />
                           </yAxis>
                         </BarChart>
                      </children>
