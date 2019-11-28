@@ -1110,8 +1110,8 @@ public class Cube {
 				tracedPieces.add(temp);
 				counter++;
 			}
-			buffer = temp;
 			side = getNewSide(buffer, side);
+			buffer = temp;
 			
 			if(Arrays.equals(temp.position, bufferLocation)) {
 				tracedPieces.add(cubieArray[bufferLocation[0]][bufferLocation[1]][bufferLocation[2]]);
