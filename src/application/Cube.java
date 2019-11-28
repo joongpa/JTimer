@@ -1,8 +1,12 @@
 package application;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.stream.IntStream;
 
 class Sides {
@@ -16,204 +20,20 @@ class Sides {
 	static final int TOP = 0;
 	static final int FRONT = 1;
 	static final int SIDE = 2;
+	
+	static final int[][] TWISTS = {{0,0,0},
+			   					   {0,2,2},
+			   					   {2,2,0},
+			   					   {2,0,2}};
+	static final VectorHashSet TWISTLOCATIONS = new VectorHashSet(Arrays.asList(TWISTS));
 }
 		
-abstract class Cubie {
-	
-	public int[] position;
-	public int[] realPos;
-	public int[] colors;
-	public int[] orgColors;
-	public HashMap<Integer, Integer> colorMap;
-	public VectorHashSet twistLocations;
-	
-	protected Cubie(int[] position, int[] realPos) {
-		this.position = position;
-		this.realPos = realPos;
-		initColorMap();
-		initTwistLocations();
-	}
-	
-	protected Cubie(int[] position) {
-		this.position = position;
-		this.realPos = position.clone();
-		initColorMap();
-		initTwistLocations();
-	}
-	
-	public boolean isSolved() {
-		return Arrays.equals(realPos, position);
-	}
-	
-	public void initOrgColors() {
-		orgColors = colors.clone();
-	}
-	
-	abstract void initColorMap();
-	abstract void initTwistLocations();
-	
-	abstract public int getSide(int color);
-	abstract public boolean isTwisted();
-	
-	@Override
-	public String toString() {
-		HashMap<Integer, String> printMap = new HashMap<Integer, String>(6);
-		printMap.put(0, "YEL");
-		printMap.put(1, "GRE");
-		printMap.put(2, "ORA");
-		printMap.put(3, "BLU");
-		printMap.put(4, "RED");
-		printMap.put(5, "WHI");
-		
-		String output = "";
-		for(int i : colors) {
-			output += printMap.get(i) + "/";
-		}
-		return output;
-	}
-}
-
-class Corner extends Cubie{
-	
-	public int twistDirection;
-	
-	public Corner(int[] position, int[] realPos) {
-		super(position, realPos);
-	}
-	
-	public Corner(int[] position) {
-		super(position);
-	}
-	
-	@Override
-	public void initColorMap() {
-		colorMap = new HashMap<Integer, Integer>(6);
-		colorMap.put(Sides.YEL, 0);
-		colorMap.put(Sides.WHI, 0);
-		colorMap.put(Sides.ORA, 1);
-		colorMap.put(Sides.RED, 1);
-		colorMap.put(Sides.GRE, 2);
-		colorMap.put(Sides.BLU, 2);
-	}
-	
-	@Override
-	public void initTwistLocations() {
-		twistLocations = new VectorHashSet(4);
-		twistLocations.add(new int[] {0,0,0});
-		twistLocations.add(new int[] {0,2,2});
-		twistLocations.add(new int[] {2,2,0});
-		twistLocations.add(new int[] {2,0,2});
-	}
-
-	@Override
-	public int getSide(int color) {
-		return colorMap.get(color);
-	}
-
-	@Override
-	public boolean isTwisted() {
-		return !(colors[Sides.TOP] == Sides.YEL || colors[Sides.TOP] == Sides.WHI);
-	}
-
-	public void setTwistDirection() {
-		int topColor = IntStream.range(0, colors.length)
-			.filter(i -> orgColors[Sides.TOP] == colors[i])
-			.findFirst()
-			.orElse(-1);
-		if(isTwisted()) {
-			if(topColor == Sides.FRONT) {
-				twistDirection = (twistLocations.contains(realPos))
-								? 0
-								: 1;
-			}
-			else if(topColor == Sides.SIDE) {
-				twistDirection = (twistLocations.contains(realPos))
-								? 1
-								: 0;
-			}
-		} else twistDirection = -1;
-	}
-}
-
-class Edge extends Cubie{
-	
-	public Edge(int[] position, int[] realPos) {
-		super(position, realPos);
-	}
-	
-	public Edge(int[] position) {
-		super(position);
-	}
-	
-	@Override
-	public void initColorMap() {
-		colorMap = new HashMap<Integer, Integer>(6);
-		colorMap.put(Sides.YEL, 0);
-		colorMap.put(Sides.WHI, 0);
-		colorMap.put(Sides.ORA, 0);
-		colorMap.put(Sides.RED, 0);
-		colorMap.put(Sides.GRE, 1);
-		colorMap.put(Sides.BLU, 1);
-	}
-	
-	@Override
-	public void initTwistLocations() {
-		twistLocations = new VectorHashSet(4);
-		twistLocations.add(new int[] {0,0,1});
-		twistLocations.add(new int[] {0,2,1});
-		twistLocations.add(new int[] {2,2,1});
-		twistLocations.add(new int[] {2,0,1});
-	}
-
-	@Override
-	public int getSide(int color) {
-		return colorMap.get(color);
-	}
-
-	@Override
-	public boolean isTwisted() {
-		
-		if(twistLocations.contains(position)) {
-			return (colors[Sides.TOP] == Sides.YEL || colors[Sides.TOP] == Sides.WHI)
-					? false
-					: true;
-		} else {
-			return (colors[Sides.FRONT] == Sides.GRE || colors[Sides.FRONT] == Sides.BLU)
-					? false
-					: true;
-		}
-	}
-}
-
-class VectorHashSet extends HashSet<int[]> {
-	
-	//idk what this is but eclipse made me put it here
-	private static final long serialVersionUID = 1L;
-
-	public VectorHashSet() {
-		super();
-	}
-	
-	public VectorHashSet(int initialSize) {
-		super(initialSize);
-	}
-	
-	@Override 
-	public boolean contains(Object object) {
-		int[] vector = (int[])object;
-		
-		for(int[] i : this) {
-			if(Arrays.equals(vector, i)) return true;
-		}
-		return false;
-	}
-}
-
-
 public class Cube {
 	
 	int[] cornerBuffer;
 	int[] edgeBuffer;
+	//Corner cornerBuffer;
+	//Edge edgeBuffer;
 	int[][] parityEdges;
 	
 	Cubie[][][] cubieArray;
@@ -229,11 +49,15 @@ public class Cube {
 		twists = new HashSet<Corner>(8);
 		flips = new HashSet<Edge>(12);
 		
-		this.cornerBuffer = cornerBuffer;
-		this.edgeBuffer = edgeBuffer;
-		this.parityEdges = parityEdges;
 		initCubeArray();
 		initCubeColors();
+		
+		this.cornerBuffer = cornerBuffer;
+		this.edgeBuffer = edgeBuffer;
+		//this.cornerBuffer = (Corner)cubieArray[cornerBuffer[0]][cornerBuffer[1]][cornerBuffer[2]];
+		//this.edgeBuffer = (Edge)cubieArray[edgeBuffer[0]][edgeBuffer[1]][edgeBuffer[2]];
+		this.parityEdges = parityEdges;
+		
 	}
 	
 	private void initCubeArray() {
@@ -285,32 +109,33 @@ public class Cube {
         cubieArray[2][1][2].colors = new int[] {Sides.WHI, Sides.BLU};
         cubieArray[2][2][1].colors = new int[] {Sides.WHI, Sides.ORA};
         
-        for(Cubie[][] layer : cubieArray) {
+        /*for(Cubie[][] layer : cubieArray) {
         	for(Cubie[] column : layer) {
         		for(Cubie cubie : column) {
         			if(cubie != null)
         				cubie.initOrgColors();
         		}
         	}
-        }
+        }*/
 	}
 	
-	private void updatePosition() {
+	/*private void updatePosition() {
 		for(int i = 0; i < 3; i++) {
 			for(int j = 0; j < 3; j++) {
 				for(int k = 0; k < 3; k++) {
-					if(cubieArray[i][j][k] != null)
-						cubieArray[i][j][k].realPos = new int[] {i,j,k};
+					//if(cubieArray[i][j][k] != null)
+						//cubieArray[i][j][k].realPos = new int[] {i,j,k};
 				}
 			}
 		}
-	}
+	}*/
 	
 	public void scrambleCube(String scramble) {
 		String[] moves = scramble.split(" ");
 		for(String move : moves) {
 			applyMove(move);
 		}
+		setParity(moves);
 	}
 	
 	public void applyMove(String move) {
@@ -375,17 +200,26 @@ public class Cube {
 			case "M'":
 				mi();
 				break;
+			case "M2":
+				m2();
+				break;
 			case "E":
 				e();
 				break;
 			case "E'":
 				ei();
 				break;
+			case "E2":
+				e2();
+				break;
 			case "S":
 				s();
 				break;
 			case "S'":
 				si();
+				break;
+			case "S2":
+				s2();
 				break;
 			default:
 		}
@@ -414,7 +248,7 @@ public class Cube {
 		cubieArray[0][2][1] = cubieArray[0][1][2];
 		cubieArray[0][1][2] = temp;
 
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void ui() {
@@ -440,7 +274,7 @@ public class Cube {
 		cubieArray[0][2][1] = cubieArray[0][1][0];
 		cubieArray[0][1][0] = temp;
 
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void u2() {
@@ -461,7 +295,7 @@ public class Cube {
 		cubieArray[0][1][0] = cubieArray[0][1][2];
 		cubieArray[0][1][2] = temp;
 		
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void d() {
@@ -487,7 +321,7 @@ public class Cube {
 		cubieArray[2][2][1] = cubieArray[2][1][0];
 		cubieArray[2][1][0] = temp;
 
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void di() {
@@ -513,7 +347,7 @@ public class Cube {
 		cubieArray[2][2][1] = cubieArray[2][1][2];
 		cubieArray[2][1][2] = temp;
 
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void d2() {
@@ -534,7 +368,7 @@ public class Cube {
 		cubieArray[2][1][0] = cubieArray[2][1][2];
 		cubieArray[2][1][2] = temp;
 		
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void l() {
@@ -560,7 +394,7 @@ public class Cube {
 		cubieArray[2][1][0] = cubieArray[1][2][0];
 		cubieArray[1][2][0] = temp;
 
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void li() {
@@ -586,7 +420,7 @@ public class Cube {
 		cubieArray[2][1][0] = cubieArray[1][0][0];
 		cubieArray[1][0][0] = temp;
 
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void l2() {
@@ -607,7 +441,7 @@ public class Cube {
 		cubieArray[1][0][0] = cubieArray[1][2][0];
 		cubieArray[1][2][0] = temp;
 		
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void r() {
@@ -633,7 +467,7 @@ public class Cube {
 		cubieArray[2][1][2] = cubieArray[1][0][2];
 		cubieArray[1][0][2] = temp;
 
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void ri() {
@@ -659,7 +493,7 @@ public class Cube {
 		cubieArray[2][1][2] = cubieArray[1][2][2];
 		cubieArray[1][2][2] = temp;
 
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void r2() {
@@ -680,7 +514,7 @@ public class Cube {
 		cubieArray[1][0][2] = cubieArray[1][2][2];
 		cubieArray[1][2][2] = temp;
 		
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void f() {
@@ -716,7 +550,7 @@ public class Cube {
 		cubieArray[2][2][1] = cubieArray[1][2][2];
 		cubieArray[1][2][2] = temp;
 
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void fi() {
@@ -752,7 +586,7 @@ public class Cube {
 		cubieArray[2][2][1] = cubieArray[1][2][0];
 		cubieArray[1][2][0] = temp;
 
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void f2() {
@@ -773,7 +607,7 @@ public class Cube {
 		cubieArray[1][2][0] = cubieArray[1][2][2];
 		cubieArray[1][2][2] = temp;
 		
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void b() {
@@ -809,7 +643,7 @@ public class Cube {
 		cubieArray[2][0][1] = cubieArray[1][0][0];
 		cubieArray[1][0][0] = temp;
 
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void bi() {
@@ -845,7 +679,7 @@ public class Cube {
 		cubieArray[2][0][1] = cubieArray[1][0][2];
 		cubieArray[1][0][2] = temp;
 
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void b2() {
@@ -866,7 +700,7 @@ public class Cube {
 		cubieArray[1][0][0] = cubieArray[1][0][2];
 		cubieArray[1][0][2] = temp;
 		
-		updatePosition();
+		//updatePosition();
 	}
 	
 	public void m() {
@@ -886,7 +720,7 @@ public class Cube {
 		cubieArray[2][2][1] = cubieArray[0][2][1];
 		cubieArray[0][2][1] = temp;
 
-		updatePosition();
+		//updatePosition();
 	}
 	
 	public void mi() {
@@ -906,7 +740,12 @@ public class Cube {
 		cubieArray[2][2][1] = cubieArray[2][0][1];
 		cubieArray[2][0][1] = temp;
 
-		updatePosition();
+		//updatePosition();
+	}
+	
+	public void m2() {
+		m();
+		m();
 	}
 	
 	public void e() {
@@ -926,7 +765,7 @@ public class Cube {
 		cubieArray[1][2][2] = cubieArray[1][2][0];
 		cubieArray[1][2][0] = temp;
 
-		updatePosition();
+		//updatePosition();
 	}
 	
 	public void ei() {
@@ -946,7 +785,12 @@ public class Cube {
 		cubieArray[1][2][2] = cubieArray[1][0][2];
 		cubieArray[1][0][2] = temp;
 
-		updatePosition();
+		//updatePosition();
+	}
+	
+	public void e2() {
+		e();
+		e();
 	}
 	
 	private void s() {
@@ -966,7 +810,7 @@ public class Cube {
 		cubieArray[2][1][2] = cubieArray[0][1][2];
 		cubieArray[0][1][2] = temp;
 
-		updatePosition();
+		//updatePosition();
 	}
 	
 	private void si() {
@@ -986,7 +830,49 @@ public class Cube {
 		cubieArray[2][1][2] = cubieArray[2][1][0];
 		cubieArray[2][1][0] = temp;
 
-		updatePosition();
+		//updatePosition();
+	}
+	
+	public void s2() {
+		s();
+		s();
+	}
+	
+	private boolean isSolved(Cubie cubie) {
+		
+		return cubie == cubieArray[cubie.position[0]][cubie.position[1]][cubie.position[2]];
+	}
+	
+	private int getTwistDirection(Corner corner) {
+		int[] indices = getIndex(corner);
+		int topColor = IntStream.range(0, corner.colors.length)
+				.filter(c -> corner.colors[c] == Sides.WHI || corner.colors[c] == Sides.YEL)
+				.findFirst()
+				.orElse(-1);
+		if(corner.isTwisted()) {
+			if(topColor == Sides.FRONT) {
+				return (Sides.TWISTLOCATIONS.contains(indices))
+								? 0
+								: 1;
+			}
+			else if(topColor == Sides.SIDE) {
+				return (Sides.TWISTLOCATIONS.contains(indices))
+								? 1
+								: 0;
+			}
+		}
+		return -1;
+	}
+	
+	private int[] getIndex(Cubie cubie) {
+		for(int i = 0; i < 3; i++) {
+			for(int j = 0; j < 3; j++) {
+				for(int k = 0; k < 3; k++) {
+					if(cubieArray[i][j][k] == cubie) return new int[] {i,j,k};
+				}
+			}
+		}
+		return null;
 	}
 	
 	@Override
@@ -1006,33 +892,42 @@ public class Cube {
 		return output;
 	}
 	
+	public void setParity(String[] moves) {
+		int count = (int)IntStream.range(0, moves.length)
+							 .filter(i -> !moves[i].contains(")"))
+							 .filter(i -> !moves[i].contains("w"))
+							 .filter(i -> !moves[i].contains("2"))
+							 .count();
+		//parity = !((count % 2 != 0) && parity);
+		parity = count % 2 != 0;
+	}
+	
 	public int getAlgCount() {
-		findSolvedPieces();		
-		checkNumTwists();
-		int cornerTargets = trace(cornerBuffer, tracedCorners);
-		parity = cornerTargets % 2 != 0;
-		int[] edgeBuffer = (parity) ? parityEdges[1] : parityEdges[0];
+		//int[] edgeBuffer;
 		
 		if(parity) {
+			if(Arrays.equals(parityEdges[0], edgeBuffer))
+				edgeBuffer = parityEdges[1];
+			else if(Arrays.equals(parityEdges[1], edgeBuffer))
+				edgeBuffer = parityEdges[0];
 			Cubie temp = cubieArray[0][2][1];
 			cubieArray[0][2][1] = cubieArray[0][1][2];
 			cubieArray[0][1][2] = temp;
-			flips.clear();
-			updatePosition();
-			findSolvedPieces();
-			checkNumTwists();
 		}
-		
+		findSolvedPieces();		
+		checkNumTwists();
+		int cornerTargets = trace(cornerBuffer, tracedCorners);
 		int edgeTargets = trace(edgeBuffer, tracedEdges);
 		int edgeAlgs = (int)Math.ceil((double)edgeTargets / 2);
 		int cornerAlgs = (int)(Math.ceil((double)cornerTargets / 2));
 		int algs = edgeAlgs + cornerAlgs + numTwistAlgs() + numFlipAlgs();
-	/*	System.out.println("twists: " + twists.size());
+		/*System.out.println("twists: " + twists.size());
 		System.out.println("flips: " + flips.size());
 		System.out.println("corner targets: " + cornerTargets);
 		System.out.println("edge targets: " + edgeTargets);
 		System.out.println("Parity: " + parity);
 		System.out.println("total algs: " + algs);*/
+		//unswap();
 		return algs;
 	}
 	
@@ -1041,9 +936,11 @@ public class Cube {
 		HashSet<Corner> cTwists = new HashSet<Corner>(8);
 		
 		for(Corner corner : twists) {
-			if(corner.twistDirection == 1)
+			//if(corner.twistDirection == 1)
+			if(getTwistDirection(corner) == 1)
 				ccTwists.add(corner);
-			else if(corner.twistDirection == 0)
+			//else if(corner.twistDirection == 0)
+			else if(getTwistDirection(corner) == 0)
 				cTwists.add(corner);
 		}
 		int otherTwists = Math.abs(ccTwists.size() - cTwists.size());
@@ -1058,14 +955,16 @@ public class Cube {
 	//Allow for ECCE users later after first working version
 	public void checkNumTwists() {
 		for(Cubie corner : tracedCorners) {
-			if(corner.isSolved() && corner.isTwisted()) {
+			//if(corner.isSolved() && corner.isTwisted()) {
+			if(isSolved(corner) && corner.isTwisted()) {
 				if(Arrays.equals(corner.position, cornerBuffer)) continue; //potentially wrong
-				((Corner)corner).setTwistDirection();
+				//((Corner)corner).setTwistDirection();
 				twists.add((Corner)corner);
 			}
 		}
 		for(Cubie edge : tracedEdges) {
-			if(edge.isSolved() && edge.isTwisted()) {
+			//if(edge.isSolved() && edge.isTwisted()) {
+			if(isSolved(edge) && edge.isTwisted()) {
 				if(parity) {
 					if(Arrays.equals(edge.position, parityEdges[1]))
 						continue;
@@ -1083,11 +982,13 @@ public class Cube {
 			for(Cubie[] column : layer) {
 				for(Cubie cubie : column) {
 					if(cubie instanceof Corner) {
-						if(cubie.isSolved() /*&& !tracedCorners.contains(cubie)*/)
+						//if(cubie.isSolved())
+						if(isSolved(cubie))
 							tracedCorners.add((Corner)cubie);
 					}
 					else if(cubie instanceof Edge) {
-						if(cubie.isSolved()/* && !tracedEdges.contains(cubie)*/)
+						//if(cubie.isSolved())
+						if(isSolved(cubie))
 							tracedEdges.add((Edge)cubie);
 					}
 				}
@@ -1096,7 +997,6 @@ public class Cube {
 	}
 	
 	public int trace(int[] passedBuffer, HashSet<Cubie> tracedPieces) {
-		
 		Cubie buffer = cubieArray[passedBuffer[0]][passedBuffer[1]][passedBuffer[2]];
 		int[] bufferLocation = passedBuffer;
 		Class<? extends Cubie> pieceType = buffer.getClass();
@@ -1105,6 +1005,7 @@ public class Cube {
 		int counter = 0;
 		
 		while(tracedPieces.size() < pieceCount) {
+			//System.out.println(buffer);
 			Cubie temp = retrieveNextPiece(buffer, side);
 			if(!tracedPieces.contains(temp)) {
 				tracedPieces.add(temp);
@@ -1117,7 +1018,8 @@ public class Cube {
 				tracedPieces.add(cubieArray[bufferLocation[0]][bufferLocation[1]][bufferLocation[2]]);
 				if(tracedPieces.size() < pieceCount) {
 					buffer = breakCycle(pieceType); //eh maybe won't work
-					bufferLocation = buffer.realPos;
+					//System.out.println("new buffer " + buffer);
+					bufferLocation = getIndex(buffer); //might not work idk lol
 					side = Sides.TOP;
 					counter += 2;
 				} else break;
@@ -1127,6 +1029,20 @@ public class Cube {
 	}
 	
 	public Cubie retrieveNextPiece(Cubie cubie, int sticker) {
+		
+		/*if(parity) {
+			if(Arrays.equals(cubie.position, parityEdges[0])) {
+				//int[] position = parityEdges[1]; //cubieArray[parityEdges[1][0]][parityEdges[1][1]][parityEdges[1][2]].position;
+				Cubie nextCubie = cubieArray[parityEdges[1][0]][parityEdges[1][1]][parityEdges[1][2]];
+				return nextCubie;
+			}
+			else if(Arrays.equals(cubie.position, parityEdges[1])) {
+				//int[] position = parityEdges[0]; //cubieArray[parityEdges[0][0]][parityEdges[0][1]][parityEdges[0][2]].position;
+				Cubie nextCubie = cubieArray[parityEdges[0][0]][parityEdges[0][1]][parityEdges[0][2]];
+				return nextCubie;
+			}
+		}*/
+		
 		int[] position = cubie.position;
 		Cubie nextCubie = cubieArray[position[0]][position[1]][position[2]];
 		return nextCubie;
@@ -1152,5 +1068,56 @@ public class Cube {
 			}
 		}
 		return null;
+	}
+	
+	public static void main(String[] args) throws FileNotFoundException {
+		test();
+		/*int[] cornerBuffer = {0,2,2};
+		int[] edgeBuffer = {0,2,1};
+		int[] thing = {0,1,2};
+		Cube cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer, thing);
+		cube.scrambleCube("B2 L' D R U2 R' F L' B R2 B2 R2 L2 D2 R F2 L' D2 B2 Rw Uw");
+		System.out.println(cube.getAlgCount());*/
+	}
+	
+	public static void test() throws FileNotFoundException {
+		double startTime = System.currentTimeMillis();
+
+		HashMap<Integer, Integer> distro = new HashMap<>();
+		distro.put(6, 0);
+		distro.put(7, 0);
+		distro.put(8, 0);
+		distro.put(9, 0);
+		distro.put(10, 0);
+		distro.put(11, 0);
+		distro.put(12, 0);
+		distro.put(13, 0);
+		distro.put(14, 0);
+		
+		int count = 0;
+		int total = 0;
+		int[] cornerBuffer = {0,2,2};
+		int[] edgeBuffer = {0,2,1};
+		int[] thing = {0,1,2};
+		Cube cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer, thing);
+		File file = new File("C:\\Users\\Jeff Park\\PycharmProjects\\Cubing\\Scrambles.txt");
+		Scanner sc = new Scanner(file);
+		while(sc.hasNext()) {
+			String scramble = sc.nextLine();
+			cube.scrambleCube(scramble);
+			
+			int algs = cube.getAlgCount();
+			distro.put(algs, distro.get(algs) + 1);
+			total += algs;
+			cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer.clone(), thing);
+			count++;
+		}
+		sc.close();
+		
+		for(Map.Entry<Integer, Integer> entry : distro.entrySet()) {
+			System.out.println(entry.getKey() + ": " + entry.getValue());
+		}
+		System.out.println(((double)total)/count);
+		System.out.println((System.currentTimeMillis() - startTime) / 1000);
 	}
 }
