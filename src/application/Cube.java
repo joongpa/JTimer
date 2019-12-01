@@ -32,8 +32,6 @@ public class Cube {
 	
 	int[] cornerBuffer;
 	int[] edgeBuffer;
-	//Corner cornerBuffer;
-	//Edge edgeBuffer;
 	int[][] parityEdges;
 	
 	Cubie[][][] cubieArray;
@@ -54,8 +52,6 @@ public class Cube {
 		
 		this.cornerBuffer = cornerBuffer;
 		this.edgeBuffer = edgeBuffer;
-		//this.cornerBuffer = (Corner)cubieArray[cornerBuffer[0]][cornerBuffer[1]][cornerBuffer[2]];
-		//this.edgeBuffer = (Edge)cubieArray[edgeBuffer[0]][edgeBuffer[1]][edgeBuffer[2]];
 		this.parityEdges = parityEdges;
 		
 	}
@@ -108,27 +104,7 @@ public class Cube {
         cubieArray[2][1][0].colors = new int[] {Sides.WHI, Sides.GRE};
         cubieArray[2][1][2].colors = new int[] {Sides.WHI, Sides.BLU};
         cubieArray[2][2][1].colors = new int[] {Sides.WHI, Sides.ORA};
-        
-        /*for(Cubie[][] layer : cubieArray) {
-        	for(Cubie[] column : layer) {
-        		for(Cubie cubie : column) {
-        			if(cubie != null)
-        				cubie.initOrgColors();
-        		}
-        	}
-        }*/
 	}
-	
-	/*private void updatePosition() {
-		for(int i = 0; i < 3; i++) {
-			for(int j = 0; j < 3; j++) {
-				for(int k = 0; k < 3; k++) {
-					//if(cubieArray[i][j][k] != null)
-						//cubieArray[i][j][k].realPos = new int[] {i,j,k};
-				}
-			}
-		}
-	}*/
 	
 	public void scrambleCube(String scramble) {
 		String[] moves = scramble.split(" ");
@@ -247,8 +223,6 @@ public class Cube {
 		cubieArray[0][1][0] = cubieArray[0][2][1];
 		cubieArray[0][2][1] = cubieArray[0][1][2];
 		cubieArray[0][1][2] = temp;
-
-		//updatePosition();
 	}
 	
 	private void ui() {
@@ -273,8 +247,6 @@ public class Cube {
 		cubieArray[0][1][2] = cubieArray[0][2][1];
 		cubieArray[0][2][1] = cubieArray[0][1][0];
 		cubieArray[0][1][0] = temp;
-
-		//updatePosition();
 	}
 	
 	private void u2() {
@@ -294,8 +266,6 @@ public class Cube {
 		temp = cubieArray[0][1][0];
 		cubieArray[0][1][0] = cubieArray[0][1][2];
 		cubieArray[0][1][2] = temp;
-		
-		//updatePosition();
 	}
 	
 	private void d() {
@@ -320,8 +290,6 @@ public class Cube {
 		cubieArray[2][1][2] = cubieArray[2][2][1];
 		cubieArray[2][2][1] = cubieArray[2][1][0];
 		cubieArray[2][1][0] = temp;
-
-		//updatePosition();
 	}
 	
 	private void di() {
@@ -346,8 +314,6 @@ public class Cube {
 		cubieArray[2][1][0] = cubieArray[2][2][1];
 		cubieArray[2][2][1] = cubieArray[2][1][2];
 		cubieArray[2][1][2] = temp;
-
-		//updatePosition();
 	}
 	
 	private void d2() {
@@ -367,8 +333,6 @@ public class Cube {
 		temp = cubieArray[2][1][0];
 		cubieArray[2][1][0] = cubieArray[2][1][2];
 		cubieArray[2][1][2] = temp;
-		
-		//updatePosition();
 	}
 	
 	private void l() {
@@ -393,8 +357,6 @@ public class Cube {
 		cubieArray[1][0][0] = cubieArray[2][1][0];
 		cubieArray[2][1][0] = cubieArray[1][2][0];
 		cubieArray[1][2][0] = temp;
-
-		//updatePosition();
 	}
 	
 	private void li() {
@@ -419,8 +381,6 @@ public class Cube {
 		cubieArray[1][2][0] = cubieArray[2][1][0];
 		cubieArray[2][1][0] = cubieArray[1][0][0];
 		cubieArray[1][0][0] = temp;
-
-		//updatePosition();
 	}
 	
 	private void l2() {
@@ -440,8 +400,6 @@ public class Cube {
 		temp = cubieArray[1][0][0];
 		cubieArray[1][0][0] = cubieArray[1][2][0];
 		cubieArray[1][2][0] = temp;
-		
-		//updatePosition();
 	}
 	
 	private void r() {
@@ -466,8 +424,6 @@ public class Cube {
 		cubieArray[1][2][2] = cubieArray[2][1][2];
 		cubieArray[2][1][2] = cubieArray[1][0][2];
 		cubieArray[1][0][2] = temp;
-
-		//updatePosition();
 	}
 	
 	private void ri() {
@@ -492,8 +448,6 @@ public class Cube {
 		cubieArray[1][0][2] = cubieArray[2][1][2];
 		cubieArray[2][1][2] = cubieArray[1][2][2];
 		cubieArray[1][2][2] = temp;
-
-		//updatePosition();
 	}
 	
 	private void r2() {
@@ -513,8 +467,6 @@ public class Cube {
 		temp = cubieArray[1][0][2];
 		cubieArray[1][0][2] = cubieArray[1][2][2];
 		cubieArray[1][2][2] = temp;
-		
-		//updatePosition();
 	}
 	
 	private void f() {
@@ -549,8 +501,6 @@ public class Cube {
 		cubieArray[1][2][0] = cubieArray[2][2][1];
 		cubieArray[2][2][1] = cubieArray[1][2][2];
 		cubieArray[1][2][2] = temp;
-
-		//updatePosition();
 	}
 	
 	private void fi() {
@@ -585,8 +535,6 @@ public class Cube {
 		cubieArray[1][2][2] = cubieArray[2][2][1];
 		cubieArray[2][2][1] = cubieArray[1][2][0];
 		cubieArray[1][2][0] = temp;
-
-		//updatePosition();
 	}
 	
 	private void f2() {
@@ -606,8 +554,6 @@ public class Cube {
 		temp = cubieArray[1][2][0];
 		cubieArray[1][2][0] = cubieArray[1][2][2];
 		cubieArray[1][2][2] = temp;
-		
-		//updatePosition();
 	}
 	
 	private void b() {
@@ -642,8 +588,6 @@ public class Cube {
 		cubieArray[1][0][2] = cubieArray[2][0][1];
 		cubieArray[2][0][1] = cubieArray[1][0][0];
 		cubieArray[1][0][0] = temp;
-
-		//updatePosition();
 	}
 	
 	private void bi() {
@@ -678,8 +622,6 @@ public class Cube {
 		cubieArray[1][0][0] = cubieArray[2][0][1];
 		cubieArray[2][0][1] = cubieArray[1][0][2];
 		cubieArray[1][0][2] = temp;
-
-		//updatePosition();
 	}
 	
 	private void b2() {
@@ -699,8 +641,6 @@ public class Cube {
 		temp = cubieArray[1][0][0];
 		cubieArray[1][0][0] = cubieArray[1][0][2];
 		cubieArray[1][0][2] = temp;
-		
-		//updatePosition();
 	}
 	
 	public void m() {
@@ -719,8 +659,6 @@ public class Cube {
 		cubieArray[2][0][1] = cubieArray[2][2][1];
 		cubieArray[2][2][1] = cubieArray[0][2][1];
 		cubieArray[0][2][1] = temp;
-
-		//updatePosition();
 	}
 	
 	public void mi() {
@@ -739,8 +677,6 @@ public class Cube {
 		cubieArray[0][2][1] = cubieArray[2][2][1];
 		cubieArray[2][2][1] = cubieArray[2][0][1];
 		cubieArray[2][0][1] = temp;
-
-		//updatePosition();
 	}
 	
 	public void m2() {
@@ -764,8 +700,6 @@ public class Cube {
 		cubieArray[1][0][2] = cubieArray[1][2][2];
 		cubieArray[1][2][2] = cubieArray[1][2][0];
 		cubieArray[1][2][0] = temp;
-
-		//updatePosition();
 	}
 	
 	public void ei() {
@@ -784,8 +718,6 @@ public class Cube {
 		cubieArray[1][2][0] = cubieArray[1][2][2];
 		cubieArray[1][2][2] = cubieArray[1][0][2];
 		cubieArray[1][0][2] = temp;
-
-		//updatePosition();
 	}
 	
 	public void e2() {
@@ -809,8 +741,6 @@ public class Cube {
 		cubieArray[2][1][0] = cubieArray[2][1][2];
 		cubieArray[2][1][2] = cubieArray[0][1][2];
 		cubieArray[0][1][2] = temp;
-
-		//updatePosition();
 	}
 	
 	private void si() {
@@ -829,8 +759,6 @@ public class Cube {
 		cubieArray[0][1][2] = cubieArray[2][1][2];
 		cubieArray[2][1][2] = cubieArray[2][1][0];
 		cubieArray[2][1][0] = temp;
-
-		//updatePosition();
 	}
 	
 	public void s2() {
@@ -898,13 +826,10 @@ public class Cube {
 							 .filter(i -> !moves[i].contains("w"))
 							 .filter(i -> !moves[i].contains("2"))
 							 .count();
-		//parity = !((count % 2 != 0) && parity);
 		parity = count % 2 != 0;
 	}
 	
 	public int getAlgCount() {
-		//int[] edgeBuffer;
-		
 		if(parity) {
 			if(Arrays.equals(parityEdges[0], edgeBuffer))
 				edgeBuffer = parityEdges[1];
@@ -936,10 +861,8 @@ public class Cube {
 		HashSet<Corner> cTwists = new HashSet<Corner>(8);
 		
 		for(Corner corner : twists) {
-			//if(corner.twistDirection == 1)
 			if(getTwistDirection(corner) == 1)
 				ccTwists.add(corner);
-			//else if(corner.twistDirection == 0)
 			else if(getTwistDirection(corner) == 0)
 				cTwists.add(corner);
 		}
@@ -955,21 +878,22 @@ public class Cube {
 	//Allow for ECCE users later after first working version
 	public void checkNumTwists() {
 		for(Cubie corner : tracedCorners) {
-			//if(corner.isSolved() && corner.isTwisted()) {
 			if(isSolved(corner) && corner.isTwisted()) {
-				if(Arrays.equals(corner.position, cornerBuffer)) continue; //potentially wrong
-				//((Corner)corner).setTwistDirection();
+				if(Arrays.equals(corner.position, cornerBuffer)) continue;
 				twists.add((Corner)corner);
 			}
 		}
 		for(Cubie edge : tracedEdges) {
-			//if(edge.isSolved() && edge.isTwisted()) {
 			if(isSolved(edge) && edge.isTwisted()) {
 				if(parity) {
 					if(Arrays.equals(edge.position, parityEdges[1]))
+					//if(Arrays.equals(edgeBuffer, parityEdges[1]))
 						continue;
+					//if(Arrays.equals(edgeBuffer, parityEdges[0]))
+					//	continue;
 				} else {
 					if(Arrays.equals(edge.position, parityEdges[0]))
+					//if(Arrays.equals(edge.position, edgeBuffer))
 						continue;
 				}
 				flips.add((Edge)edge);
@@ -982,12 +906,10 @@ public class Cube {
 			for(Cubie[] column : layer) {
 				for(Cubie cubie : column) {
 					if(cubie instanceof Corner) {
-						//if(cubie.isSolved())
 						if(isSolved(cubie))
 							tracedCorners.add((Corner)cubie);
 					}
 					else if(cubie instanceof Edge) {
-						//if(cubie.isSolved())
 						if(isSolved(cubie))
 							tracedEdges.add((Edge)cubie);
 					}
@@ -1029,20 +951,6 @@ public class Cube {
 	}
 	
 	public Cubie retrieveNextPiece(Cubie cubie, int sticker) {
-		
-		/*if(parity) {
-			if(Arrays.equals(cubie.position, parityEdges[0])) {
-				//int[] position = parityEdges[1]; //cubieArray[parityEdges[1][0]][parityEdges[1][1]][parityEdges[1][2]].position;
-				Cubie nextCubie = cubieArray[parityEdges[1][0]][parityEdges[1][1]][parityEdges[1][2]];
-				return nextCubie;
-			}
-			else if(Arrays.equals(cubie.position, parityEdges[1])) {
-				//int[] position = parityEdges[0]; //cubieArray[parityEdges[0][0]][parityEdges[0][1]][parityEdges[0][2]].position;
-				Cubie nextCubie = cubieArray[parityEdges[0][0]][parityEdges[0][1]][parityEdges[0][2]];
-				return nextCubie;
-			}
-		}*/
-		
 		int[] position = cubie.position;
 		Cubie nextCubie = cubieArray[position[0]][position[1]][position[2]];
 		return nextCubie;
@@ -1076,7 +984,7 @@ public class Cube {
 		int[] edgeBuffer = {0,2,1};
 		int[] thing = {0,1,2};
 		Cube cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer, thing);
-		cube.scrambleCube("B2 L' D R U2 R' F L' B R2 B2 R2 L2 D2 R F2 L' D2 B2 Rw Uw");
+		cube.scrambleCube("L F2 R' D2 R U2 R' D2 U2 F2 U' R D R2 B' L D R' U B'");
 		System.out.println(cube.getAlgCount());*/
 	}
 	
@@ -1107,6 +1015,7 @@ public class Cube {
 			cube.scrambleCube(scramble);
 			
 			int algs = cube.getAlgCount();
+			//if(algs == 13) System.out.println(scramble);
 			distro.put(algs, distro.get(algs) + 1);
 			total += algs;
 			cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer.clone(), thing);
