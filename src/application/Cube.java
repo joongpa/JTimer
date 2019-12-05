@@ -1119,13 +1119,13 @@ public class Cube {
 		for(Cubie edge : tracedEdges) {
 			if(isSolved(edge) && edge.isTwisted()) {
 				if(parity) {
-					if(Arrays.equals(edge.position, parityEdges[1]))
+					if(Arrays.equals(edge.position, parityEdges[1])) //add another if condition for parity edges[0]
 					//if(Arrays.equals(edgeBuffer, parityEdges[1]))
 						continue;
 					//if(Arrays.equals(edgeBuffer, parityEdges[0]))
 					//	continue;
 				} else {
-					if(Arrays.equals(edge.position, parityEdges[0]))
+					if(Arrays.equals(edge.position, parityEdges[0])) //possibly replace parityEdges[0] with buffer position
 					//if(Arrays.equals(edge.position, edgeBuffer))
 						continue;
 				}

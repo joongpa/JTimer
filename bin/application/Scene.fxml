@@ -127,11 +127,20 @@
                            </padding>
                         </Label>
                         <Label text="Alg Count" textFill="#7c7c7c" GridPane.rowIndex="5" />
-                        <ChoiceBox fx:id="algCount" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                        <ChoiceBox fx:id="algCount" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                           <effect>
+                              <DropShadow color="#004fe3" height="1.0" offsetX="2.0" offsetY="2.0" radius="0.0" width="1.0" />
+                           </effect></ChoiceBox>
                         <Label text="Corner Buffer" textFill="#7c7c7c" GridPane.rowIndex="6" />
                         <Label text="Edge Buffer" textFill="#7c7c7c" GridPane.rowIndex="7" />
-                        <ChoiceBox fx:id="cornerBufferChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                        <ChoiceBox fx:id="edgeBufferChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                        <ChoiceBox fx:id="cornerBufferChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                           <effect>
+                              <DropShadow color="#004fe3" height="1.0" offsetX="2.0" offsetY="2.0" radius="0.0" width="1.0" />
+                           </effect></ChoiceBox>
+                        <ChoiceBox fx:id="edgeBufferChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                           <effect>
+                              <DropShadow color="#004fe3" height="1.0" offsetX="2.0" offsetY="2.0" radius="0.0" width="1.0" />
+                           </effect></ChoiceBox>
                         <Label text="Alg Stats">
                            <font>
                               <Font name="System Bold" size="12.0" />
@@ -157,8 +166,14 @@
                         </BarChart>
                         <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
                            <children>
-                              <ChoiceBox fx:id="parity1" prefWidth="150.0" />
-                              <ChoiceBox fx:id="parity2" prefWidth="150.0" />
+                              <ChoiceBox fx:id="parity1" prefWidth="150.0">
+                                 <effect>
+                                    <DropShadow color="#004fe3" height="1.0" offsetX="2.0" offsetY="2.0" radius="0.0" width="1.0" />
+                                 </effect></ChoiceBox>
+                              <ChoiceBox fx:id="parity2" prefWidth="150.0">
+                                 <effect>
+                                    <DropShadow color="#004fe3" height="1.0" offsetX="2.0" offsetY="2.0" radius="0.0" width="1.0" />
+                                 </effect></ChoiceBox>
                            </children>
                         </HBox>
                      </children>

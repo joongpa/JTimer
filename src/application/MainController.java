@@ -1,5 +1,6 @@
 /*
  * To-do list:
+ * - Separate settings page
  * - Add other buffer support
  * - Add floating support
  * - Letter pair tracing (until a cycle break)
@@ -106,7 +107,7 @@ public class MainController implements Initializable{
 	private KeyCombination downCombo = new KeyCodeCombination(KeyCode.DOWN);
 	
 	double delayTime = 0;
-	int intervalTime = 13;
+	int intervalTime = 10;
 	
 	Stopwatch st = new Stopwatch();
 	SimpleTimer delay = new SimpleTimer();
@@ -266,6 +267,7 @@ public class MainController implements Initializable{
 			if(oldvalue) {
 				interval.reset();
 				interval.start();
+				scrambleText.setVisible(false);
 			}
 		});
 		
@@ -273,6 +275,7 @@ public class MainController implements Initializable{
 			if(newValue.equals("0")) {
 				intervalTimer.textProperty().unbind();
 				intervalTimer.setText("Ready");
+				scrambleText.setVisible(true);
 			}
 			
 			if(oldvalue.equals("0")) {

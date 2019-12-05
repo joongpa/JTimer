@@ -88,3 +88,18 @@
 	-fx-bar-fill: #00a5cf;
 	-fx-bar-gill: #00a5cf;
 }
+
+.choice-box {
+	-fx-background-color: #deefff;
+}
+
+.choice-box > .label { 
+	-fx-text-fill: #007aed;
+	-fx-font-weight: bold;
+}
+
+.choice-box:hover {
+    -fx-scale-y: 1.05;
+    -fx-scale-x: 1.05;
+}
+
