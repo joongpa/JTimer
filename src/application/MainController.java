@@ -1,13 +1,11 @@
 /*
  * To-do list:
- * - Delay timer between solves
  * - Add other buffer support
  * - Add floating support
  * - Letter pair tracing (until a cycle break)
  * - Separate page for categorizing solves
  * - Options to categorize solve by "Corner Memory Related", "Edge Memory Related", and "Execution Related"
  * - Page to enter letter scheme
- * - Progress bar that shows how long spacebar must be held for
  * - Style stuff to not be default javafx look
  * - Switch to Maven so everything can be packaged neatly
  * - <LAST PRIORITY> Stackmat and Typing input
@@ -23,6 +21,8 @@ import java.util.Arrays;
 import java.util.IntSummaryStatistics;
 import java.util.ResourceBundle;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -92,7 +92,7 @@ public class MainController implements Initializable{
 	@FXML private Label bestAverage12;
 	@FXML private Label mean;
 	@FXML private Label average;
-	
+	@FXML private Label intervalTimer;
 	private int keyPressCount = 0;
 	
 	//hotkeys
@@ -105,12 +105,15 @@ public class MainController implements Initializable{
 	private KeyCombination upCombo = new KeyCodeCombination(KeyCode.UP);
 	private KeyCombination downCombo = new KeyCodeCombination(KeyCode.DOWN);
 	
+	double delayTime = 0;
+	int intervalTime = 13;
 	
 	Stopwatch st = new Stopwatch();
 	SimpleTimer delay = new SimpleTimer();
-	SimpleTimer interval = new SimpleTimer();
-	private boolean ready = false;
-	boolean lockout = false;
+	CountDownTimer interval = new CountDownTimer(intervalTime);
+	
+	BooleanProperty ready = new SimpleBooleanProperty(false);
+	BooleanProperty lockout = new SimpleBooleanProperty(false);
 
 	int currentAlgCount;
 	
@@ -132,12 +135,7 @@ public class MainController implements Initializable{
 		
 		currentAlgCount = setScramble();
 		popup = newPopup();
-		
-		//Solve[] tester = new Solve[30];
-		//for(int i = 0; i < 30; i++) tester[i] = new Solve(i+1, 20.0, "", 10);
-		//ObservableList<Solve> dummyList = FXCollections.observableArrayList(tester);
-		//timeList.setItems(dummyList);
-		
+
 		solveNumber.setCellValueFactory(new PropertyValueFactory<Solve, Integer>("solveNumber"));
 		displayedTime.setCellValueFactory(new PropertyValueFactory<Solve, Solve>("this"));
 		mo3.setCellValueFactory(new PropertyValueFactory<Solve, Solve>("this"));
@@ -212,9 +210,10 @@ public class MainController implements Initializable{
 		
 		timerLabel.textProperty().bind(st.formattedTimeProperty);
 		
+		interval.start();
 		root.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-			
-			if(st.inSolvingPhase())
+
+			if(st.inProgress.get())
 			{
 				keyPressCount++;
 				if(keyPressCount == 1) {
@@ -226,16 +225,16 @@ public class MainController implements Initializable{
 			        currentAlgCount = setScramble();
 			        setSessionStats();
 			        st.stop();
-			        lockout = true;
+			        lockout.set(true);
 				}
 			} else if(spaceCombo.match(e)){
 				keyPressCount++;
 				if(keyPressCount == 1)
 					delay.start();
-				if(delay.getTime() > 0 && !lockout){
+				if(delay.getTime() > delayTime && !lockout.get() && interval.getTime() <= 0){
 					st.reset();
 					timerLabel.setTextFill(Color.web("#00DD00"));
-					ready = true;
+					ready.set(true);
 				}
 			}
 			e.consume();
@@ -243,17 +242,17 @@ public class MainController implements Initializable{
 		
 		root.addEventFilter(KeyEvent.KEY_RELEASED, e -> {
 			keyPressCount = 0;
-			lockout = false;
+			lockout.set(false);
 			if(spaceCombo.match(e)) 
 			{
 				timerLabel.setTextFill(Color.web("#000000"));
-				
-				if(!st.inSolvingPhase())
+
+				if(!st.inProgress.get())
 				{
-					if(ready)
+					if(ready.get())
 					{
 						st.start();
-						ready = false;
+						ready.set(false);
 					}
 				} else {
 					st.stop();
@@ -262,6 +261,26 @@ public class MainController implements Initializable{
 				e.consume();
 			}
 		});
+		
+		st.inProgress.addListener((o, oldvalue, newValue) -> {
+			if(oldvalue) {
+				interval.reset();
+				interval.start();
+			}
+		});
+		
+		interval.formattedTimeProperty.addListener((o, oldvalue, newValue) -> {
+			if(newValue.equals("0")) {
+				intervalTimer.textProperty().unbind();
+				intervalTimer.setText("Ready");
+			}
+			
+			if(oldvalue.equals("0")) {
+				intervalTimer.textProperty().bind(interval.formattedTimeProperty);
+			}
+		});
+		
+		intervalTimer.textProperty().bind(interval.formattedTimeProperty);
 		
 		root.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
 			if(clearCombo.match(e)) clear();

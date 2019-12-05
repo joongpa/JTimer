@@ -2,7 +2,9 @@ package application;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -13,13 +15,15 @@ public class Stopwatch {
 	public DoubleProperty timeProperty;
 	public StringProperty formattedTimeProperty;
 	private Timeline timeline;
-	private boolean inProgress;
+	//private boolean inProgress;
+	public BooleanProperty inProgress;
 	
 	public Stopwatch()
 	{
 		timeProperty = new SimpleDoubleProperty(0);
 		formattedTimeProperty = new SimpleStringProperty("0.00");
-		inProgress = false;
+		//inProgress = false;
+		inProgress = new SimpleBooleanProperty(false);
 		
 		timeline = new Timeline(new KeyFrame(Duration.millis(10), e ->  {
 			timeProperty.set(timeProperty.doubleValue() + 0.01);
@@ -31,7 +35,8 @@ public class Stopwatch {
 	public void start()
 	{
 		timeline.play();
-		inProgress = true;
+		//inProgress = true;
+		inProgress.set(true);
 	}
 	
 	public void pause()
@@ -41,7 +46,8 @@ public class Stopwatch {
 	
 	public void stop()
 	{
-		inProgress = false;
+		//inProgress = false;
+		inProgress.set(false);
 	}
 	
 	public void reset()
@@ -60,10 +66,10 @@ public class Stopwatch {
 		return formattedTimeProperty.get();
 	}
 	
-	public boolean inSolvingPhase()
-	{
-		return inProgress;
-	}
+	//public boolean inSolvingPhase()
+	//{
+	//	return inProgress;
+	//}
 	
 	public static String formatTime(double time)
 	{
