@@ -41,6 +41,8 @@ public class Cube {
 	HashSet<Edge> flips;
 	boolean parity;
 	
+	int[] rotations = {0,0,0};
+	
 	public Cube(int[] cornerBuffer, int[] edgeBuffer, int[]... parityEdges) {
 		tracedCorners = new HashSet<Cubie>(8);
 		tracedEdges = new HashSet<Cubie>(12);
@@ -112,6 +114,7 @@ public class Cube {
 			applyMove(move);
 		}
 		setParity(moves);
+		rotateBack();
 	}
 	
 	public void applyMove(String move) {
@@ -196,6 +199,60 @@ public class Cube {
 				break;
 			case "S2":
 				s2();
+				break;
+			case "Rw": //comment here
+				rw();
+				break;
+			case "Rw'":
+				rwi();
+				break;
+			case "Rw2":
+				rw2();
+				break;
+			case "Lw":
+				lw();
+				break;
+			case "Lw'":
+				lwi();
+				break;
+			case "Lw2":
+				lw2();
+				break;
+			case "Uw":
+				uw();
+				break;
+			case "Uw'":
+				uwi();
+				break;
+			case "Uw2":
+				uw2();
+				break;
+			case "Dw":
+				dw();
+				break;
+			case "Dw'":
+				dwi();
+				break;
+			case "Dw2":
+				dw2();
+				break;
+			case "Fw":
+				fw();
+				break;
+			case "Fw'":
+				fwi();
+				break;
+			case "Fw2":
+				fw2();
+				break;
+			case "Bw":
+				bw();
+				break;
+			case "Bw'":
+				bwi();
+				break;
+			case "Bw2":
+				bw2();
 				break;
 			default:
 		}
@@ -766,6 +823,182 @@ public class Cube {
 		s();
 	}
 	
+	public void x() {
+		rotations[0] += 1;
+		r();
+		mi();
+		li();
+	}
+	
+	public void xi() {
+		rotations[0] -= 1;
+		ri();
+		m();
+		l();
+	}
+	
+	public void x2() {
+		x();
+		x();
+	}
+	
+	public void y() {
+		rotations[1] += 1;
+		u();
+		ei();
+		di();
+	}
+	
+	public void yi() {
+		rotations[1] -= 1;
+		ui();
+		e();
+		d();
+	}
+	
+	public void y2() {
+		y();
+		y();
+	}
+	
+	public void z() {
+		rotations[2] += 1;
+		f();
+		s();
+		bi();
+	}
+	
+	public void zi() {
+		rotations[2] -= 1;
+		fi();
+		si();
+		b();
+	}
+	
+	public void z2() {
+		z();
+		z();
+	}
+	
+	public void rw() {
+		l();
+		x();
+	}
+	
+	public void rwi() {
+		li();
+		xi();
+	}
+	
+	public void rw2() {
+		rw();
+		rw();
+	}
+	
+	public void lw() {
+		r();
+		xi();
+	}
+	
+	public void lwi() {
+		ri();
+		x();
+	}
+	
+	public void lw2() {
+		lw();
+		lw();
+	}
+	
+	public void uw() {
+		d();
+		y();
+	}
+	
+	public void uwi() {
+		di();
+		yi();
+	}
+	
+	public void uw2() {
+		uw();
+		uw();
+	}
+	
+	public void dw() {
+		u();
+		yi();
+	}
+	
+	public void dwi() {
+		ui();
+		y();
+	}
+	
+	public void dw2() {
+		dw();
+		dw();
+	}
+	
+	public void fw() {
+		b();
+		z();
+	}
+	
+	public void fwi() {
+		bi();
+		zi();
+	}
+	
+	public void fw2() {
+		fw();
+		fw();
+	}
+	
+	public void bw() {
+		f();
+		zi();
+	}
+	
+	public void bwi() {
+		fi();
+		z();
+	}
+	
+	public void bw2() {
+		bw();
+		bw();
+	}
+	
+	public void rotateBack() {
+		
+		int[] temp = rotations.clone();
+		
+		if(temp[0] != 0) {
+			if(temp[0] < 0) {
+				for(int i = 0; i > temp[0]; i--) x();
+			} else {
+				for(int i = 0; i < temp[0]; i++) xi();
+			}
+		}
+		
+		if(temp[1] != 0) {
+			if(temp[1] < 0) {
+				for(int i = 0; i > temp[1]; i--) y();
+			} else {
+				for(int i = 0; i < temp[1]; i++) yi();
+			}
+		}
+		
+		if(temp[2] != 0) {
+			if(temp[2] < 0) {
+				for(int i = 0; i > temp[2]; i--) z();
+			} else {
+				for(int i = 0; i < temp[2]; i++) zi();
+			}
+		}
+	}
+	
 	private boolean isSolved(Cubie cubie) {
 		
 		return cubie == cubieArray[cubie.position[0]][cubie.position[1]][cubie.position[2]];
@@ -811,7 +1044,7 @@ public class Cube {
 				for(int k = 0; k < 3; k++) {
 					if(cubieArray[i][j][k] != null)
 						output += cubieArray[i][j][k].toString() + ", ";
-					else output += "X ";
+					else output += "              ";
 				}
 				output += "\n";
 			}
@@ -823,7 +1056,7 @@ public class Cube {
 	public void setParity(String[] moves) {
 		int count = (int)IntStream.range(0, moves.length)
 							 .filter(i -> !moves[i].contains(")"))
-							 .filter(i -> !moves[i].contains("w"))
+							 //.filter(i -> !moves[i].contains("w"))
 							 .filter(i -> !moves[i].contains("2"))
 							 .count();
 		parity = count % 2 != 0;
@@ -979,13 +1212,13 @@ public class Cube {
 	}
 	
 	public static void main(String[] args) throws FileNotFoundException {
-		test();
-		/*int[] cornerBuffer = {0,2,2};
+		//test();
+		int[] cornerBuffer = {0,2,2};
 		int[] edgeBuffer = {0,2,1};
 		int[] thing = {0,1,2};
 		Cube cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer, thing);
-		cube.scrambleCube("L F2 R' D2 R U2 R' D2 U2 F2 U' R D R2 B' L D R' U B'");
-		System.out.println(cube.getAlgCount());*/
+		cube.scrambleCube("L2 D2 B' L2 F D2 B2 L2 R2 B' D2 L2 R' D' L B' D' L' U' F2 Fw");
+		System.out.println(cube.getAlgCount());
 	}
 	
 	public static void test() throws FileNotFoundException {
@@ -1013,9 +1246,9 @@ public class Cube {
 		while(sc.hasNext()) {
 			String scramble = sc.nextLine();
 			cube.scrambleCube(scramble);
-			
 			int algs = cube.getAlgCount();
-			//if(algs == 13) System.out.println(scramble);
+			
+			if(algs == 13) System.out.println(scramble);
 			distro.put(algs, distro.get(algs) + 1);
 			total += algs;
 			cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer.clone(), thing);

@@ -1,5 +1,6 @@
 /*
  * To-do list:
+ * - Delay timer between solves
  * - Add other buffer support
  * - Add floating support
  * - Letter pair tracing (until a cycle break)
@@ -46,6 +47,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Popup;
+import net.gnehzr.tnoodle.puzzle.NoInspectionThreeByThreeCubePuzzle;
 import net.gnehzr.tnoodle.puzzle.ThreeByThreeCubePuzzle;
 import net.gnehzr.tnoodle.scrambles.Puzzle;
 
@@ -103,14 +105,16 @@ public class MainController implements Initializable{
 	private KeyCombination upCombo = new KeyCodeCombination(KeyCode.UP);
 	private KeyCombination downCombo = new KeyCodeCombination(KeyCode.DOWN);
 	
+	
 	Stopwatch st = new Stopwatch();
 	SimpleTimer delay = new SimpleTimer();
+	SimpleTimer interval = new SimpleTimer();
 	private boolean ready = false;
 	boolean lockout = false;
 
 	int currentAlgCount;
 	
-	Puzzle puzzle = new ThreeByThreeCubePuzzle();
+	Puzzle puzzle = new NoInspectionThreeByThreeCubePuzzle();
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {

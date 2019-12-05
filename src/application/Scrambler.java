@@ -7,6 +7,17 @@ public class Scrambler {
 	static String[][] moves = {{"U", "U'", "U2", "D", "D'", "D2"},
 	                        {"R", "R'", "R2", "L", "L'", "L2"},
 	                        {"F", "F'", "F2", "B", "B'", "B2"}};
+
+	static String[] orientations = {"", "Uw", "Uw2", "Uw'", "Fw2", "Fw2 Uw", "Fw2 Uw2", "Fw2 Uw'", "Rw", "Rw Uw", "Rw Uw2", "Rw Uw'",
+			 						"Rw'", "Rw' Uw", "Rw' Uw2", "Rw' Uw'", "Fw'", "Fw' Uw", "Fw' Uw2", "Fw' Uw'", "Fw", "Fw Uw", "Fw Uw2", "Fw Uw'"};
+	
+	/* YEL: ORA BLU RED GRE
+	 * WHI: ORA BLU RED GRE
+	 * BLU: ORA WHI RED YEL
+	 * GRE: ORA WHI RED YEL
+	 * ORA: BLU YEL GRE WHI
+	 * RED: BLU YEL GRE WHI
+	 */
 	
 	public static int getAlgCount(String scramble) {
 		int[] cornerBuffer = {0,2,2};
@@ -51,6 +62,9 @@ public class Scrambler {
 			lastFirstIndex = firstIndex;
 			scramble += moves[firstIndex][secondIndex] + " ";
 		}
+		
+		scramble += orientations[(int)(Math.random() * 24)];
+		
 		return scramble;
 	}
 	
