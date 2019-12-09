@@ -87,7 +87,7 @@ public class MainController implements Initializable{
 	String[] edgeBufferOptions = {"UF", "UB", "UR", "UL", "DF", "DR", "DL", "DB", "FR", "FL", "BR", "BL"};
 	
 	String[] intervalOptions = {"0", "5", "10", "15"};
-	String[] delayOptions = {"0", "0.3", "0.55"};
+	String[] delayOptions = {"0.00", "0.30", "0.55"};
 	
 	@FXML private Label accuracy;
 	@FXML private Label bestTime;
