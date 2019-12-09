@@ -40,6 +40,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
@@ -85,6 +86,8 @@ public class MainController implements Initializable{
 	String[] cornerBufferOptions = {"UBL", "UFR", "UBR", "UFL", "DFR", "DFL", "DBR", "DBL"};
 	String[] edgeBufferOptions = {"UF", "UB", "UR", "UL", "DF", "DR", "DL", "DB", "FR", "FL", "BR", "BL"};
 	
+	String[] intervalOptions = {"0", "5", "10", "15"};
+	String[] delayOptions = {"0", "0.3", "0.55"};
 	
 	@FXML private Label accuracy;
 	@FXML private Label bestTime;
@@ -96,6 +99,9 @@ public class MainController implements Initializable{
 	@FXML private Label intervalTimer;
 	private int keyPressCount = 0;
 	
+	@FXML private ChoiceBox<String> timerDelayTextField;
+	@FXML private ChoiceBox<String> timerIntervalTextField;
+	
 	//hotkeys
 	private KeyCombination spaceCombo = new KeyCodeCombination(KeyCode.SPACE);
 	private KeyCombination clearCombo = new KeyCodeCombination(KeyCode.D, KeyCodeCombination.ALT_DOWN);
@@ -105,9 +111,10 @@ public class MainController implements Initializable{
 	private KeyCombination dnfCombo = new KeyCodeCombination(KeyCode.DIGIT3, KeyCodeCombination.CONTROL_DOWN);
 	private KeyCombination upCombo = new KeyCodeCombination(KeyCode.UP);
 	private KeyCombination downCombo = new KeyCodeCombination(KeyCode.DOWN);
+	private KeyCombination enterCombo = new KeyCodeCombination(KeyCode.ENTER);
 	
-	double delayTime = 0;
-	int intervalTime = 10;
+	double delayTime = -5;
+	int intervalTime = 0;
 	
 	Stopwatch st = new Stopwatch();
 	SimpleTimer delay = new SimpleTimer();
@@ -124,14 +131,18 @@ public class MainController implements Initializable{
 	public void initialize(URL arg0, ResourceBundle arg1) {
 	
 		series = new XYChart.Series<>();
-		xAxis.setCategories(FXCollections.<String>observableArrayList(Arrays.asList(
-				   "8", "9", "10", "11", "12")));
+		xAxis.setCategories(FXCollections.<String>observableArrayList(Arrays.asList("8", "9", "10", "11", "12")));
 		
 		algCount.getItems().addAll(FXCollections.observableArrayList(options));
 		cornerBufferChoiceBox.getItems().addAll(FXCollections.observableArrayList(cornerBufferOptions));
 		edgeBufferChoiceBox.getItems().addAll(FXCollections.observableArrayList(edgeBufferOptions));
 		parity1.getItems().addAll(FXCollections.observableArrayList(edgeBufferOptions));
 		parity2.getItems().addAll(FXCollections.observableArrayList(edgeBufferOptions));
+		
+		timerDelayTextField.getItems().addAll(FXCollections.observableArrayList(delayOptions));
+		timerDelayTextField.getSelectionModel().clearAndSelect(0);
+		timerIntervalTextField.getItems().addAll(FXCollections.observableArrayList(intervalOptions));
+		timerIntervalTextField.getSelectionModel().clearAndSelect(0);
 		algCount.getSelectionModel().clearAndSelect(0);
 		
 		currentAlgCount = setScramble();
@@ -267,18 +278,18 @@ public class MainController implements Initializable{
 			if(oldvalue) {
 				interval.reset();
 				interval.start();
-				scrambleText.setVisible(false);
+				if(intervalTime != 0) scrambleText.setVisible(false);
 			}
 		});
 		
 		interval.formattedTimeProperty.addListener((o, oldvalue, newValue) -> {
-			if(newValue.equals("0")) {
+			if(Integer.valueOf(newValue) <= 0) {
 				intervalTimer.textProperty().unbind();
 				intervalTimer.setText("Ready");
 				scrambleText.setVisible(true);
 			}
 			
-			if(oldvalue.equals("0")) {
+			if(Integer.valueOf(newValue) > 0) {
 				intervalTimer.textProperty().bind(interval.formattedTimeProperty);
 			}
 		});
@@ -328,6 +339,16 @@ public class MainController implements Initializable{
 		
 		algCount.getSelectionModel().selectedItemProperty().addListener((o, oldvalue, newValue) -> {
 			currentAlgCount = setScramble();
+		});
+		
+		timerDelayTextField.getSelectionModel().selectedItemProperty().addListener((o, oldvalue, newValue) -> {
+			delayTime = Double.valueOf(newValue);
+			if(delayTime == 0) delayTime = -5;
+		});
+		
+		timerIntervalTextField.getSelectionModel().selectedItemProperty().addListener((o, oldvalue, newValue) -> {
+			intervalTime = Integer.valueOf(newValue);
+			interval.setStartTime(intervalTime);
 		});
 		
 		timeList.getSelectionModel().selectedItemProperty().addListener((o, oldvalue, newValue) -> {

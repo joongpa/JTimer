@@ -30,6 +30,10 @@ public class CountDownTimer {
 		}));
 		timeline.setCycleCount(Timeline.INDEFINITE);
 	}
+	
+	public void setStartTime(int time) {
+		this.startTime = time;
+	}
 
 	public void start()
 	{

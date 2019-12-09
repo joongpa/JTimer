@@ -41,6 +41,25 @@ abstract class Cubie {
 		}
 		return output;
 	}
+	
+	public static String colorFromNum(int color) {
+		switch(color) {
+			case 0:
+				return "YEL";
+			case 1:
+				return "GRE";
+			case 2:
+				return "ORA";
+			case 3:
+				return "BLU";
+			case 4:
+				return "RED";
+			case 5:
+				return "WHI";
+			default:
+				return null;
+		}
+	}
 }
 
 class Corner extends Cubie{
@@ -96,14 +115,18 @@ class Edge extends Cubie{
 		colorMap = new HashMap<Integer, Integer>(6);
 		colorMap.put(Sides.YEL, 0);
 		colorMap.put(Sides.WHI, 0);
-		colorMap.put(Sides.ORA, 0);
-		colorMap.put(Sides.RED, 0);
+		colorMap.put(Sides.ORA, 1);
+		colorMap.put(Sides.RED, 1);
 		colorMap.put(Sides.GRE, 1);
 		colorMap.put(Sides.BLU, 1);
 	}
 
 	@Override
 	public int getSide(int color) {
+		if(position[0] == 1) {
+			if(color == Sides.ORA || color == Sides.RED)
+				return 0;
+		}
 		return colorMap.get(color);
 	}
 

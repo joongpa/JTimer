@@ -44,7 +44,7 @@
             <MenuItem mnemonicParsing="false" text="Quit" />
           </items>
         </Menu>
-        <Menu mnemonicParsing="false" text="Edit">
+        <Menu mnemonicParsing="false" text="Timer">
           <items>
             <MenuItem mnemonicParsing="false" text="Undo" />
             <MenuItem mnemonicParsing="false" text="Redo" />
@@ -101,10 +101,13 @@
                   </GridPane>
                   <GridPane prefHeight="234.0" prefWidth="823.0">
                     <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="725.9999618530273" minWidth="10.0" prefWidth="354.777852376302" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="725.9999618530273" minWidth="10.0" prefWidth="247.88881429036462" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" percentWidth="12.5" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="100.0" percentWidth="12.5" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="725.9999618530273" minWidth="0.0" prefWidth="31.3333740234375" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="725.9999618530273" minWidth="24.000015258789062" percentWidth="12.5" prefWidth="68.6666259765625" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="725.9999618530273" minWidth="47.0" percentWidth="12.5" prefWidth="47.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="725.9999618530273" minWidth="10.0" prefWidth="87.66664632161462" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="725.9999618530273" minWidth="10.0" prefWidth="293.0000203450521" />
                     </columnConstraints>
                     <rowConstraints>
                         <RowConstraints maxHeight="234.6666488647461" minHeight="10.0" percentHeight="11.11" prefHeight="109.00002034505206" vgrow="SOMETIMES" />
@@ -116,6 +119,7 @@
                         <RowConstraints maxHeight="190.0" minHeight="35.0" percentHeight="11.11" prefHeight="80.0" vgrow="SOMETIMES" />
                         <RowConstraints maxHeight="190.0" minHeight="35.0" percentHeight="11.11" prefHeight="80.0" vgrow="SOMETIMES" />
                         <RowConstraints maxHeight="234.6666488647461" minHeight="10.0" percentHeight="11.11" prefHeight="100.0" vgrow="SOMETIMES" />
+                        <RowConstraints />
                     </rowConstraints>
                      <children>
                         <Label text="Settings" GridPane.rowIndex="4">
@@ -129,17 +133,17 @@
                         <Label text="Alg Count" textFill="#7c7c7c" GridPane.rowIndex="5" />
                         <ChoiceBox fx:id="algCount" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
                            <effect>
-                              <DropShadow color="#004fe3" height="1.0" offsetX="2.0" offsetY="2.0" radius="0.0" width="1.0" />
+                              <DropShadow color="#004fe3" height="0.0" offsetX="1.0" offsetY="1.0" radius="0.0" width="0.0" />
                            </effect></ChoiceBox>
                         <Label text="Corner Buffer" textFill="#7c7c7c" GridPane.rowIndex="6" />
                         <Label text="Edge Buffer" textFill="#7c7c7c" GridPane.rowIndex="7" />
                         <ChoiceBox fx:id="cornerBufferChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
                            <effect>
-                              <DropShadow color="#004fe3" height="1.0" offsetX="2.0" offsetY="2.0" radius="0.0" width="1.0" />
+                              <DropShadow color="#004fe3" height="1.0" offsetX="1.0" offsetY="1.0" radius="0.0" width="1.0" />
                            </effect></ChoiceBox>
                         <ChoiceBox fx:id="edgeBufferChoiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
                            <effect>
-                              <DropShadow color="#004fe3" height="1.0" offsetX="2.0" offsetY="2.0" radius="0.0" width="1.0" />
+                              <DropShadow color="#004fe3" height="1.0" offsetX="1.0" offsetY="1.0" radius="0.0" width="1.0" />
                            </effect></ChoiceBox>
                         <Label text="Alg Stats">
                            <font>
@@ -156,7 +160,7 @@
                         <Label fx:id="dnfAlgs" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                         <Label fx:id="succAlgs" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <Label text="Parity Edges" textFill="#7c7c7c" GridPane.rowIndex="8" />
-                        <BarChart fx:id="barChart" animated="false" barGap="0.0" categoryGap="0.0" legendSide="LEFT" legendVisible="false" prefHeight="319.0" prefWidth="255.0" GridPane.columnIndex="3" GridPane.rowSpan="9">
+                        <BarChart fx:id="barChart" animated="false" barGap="0.0" categoryGap="0.0" legendSide="LEFT" legendVisible="false" prefHeight="319.0" prefWidth="270.0" GridPane.columnIndex="6" GridPane.rowIndex="1" GridPane.rowSpan="9">
                           <xAxis>
                             <CategoryAxis autoRanging="false" label="Algs" side="BOTTOM" fx:id="xAxis" />
                           </xAxis>
@@ -168,14 +172,34 @@
                            <children>
                               <ChoiceBox fx:id="parity1" prefWidth="150.0">
                                  <effect>
-                                    <DropShadow color="#004fe3" height="1.0" offsetX="2.0" offsetY="2.0" radius="0.0" width="1.0" />
+                                    <DropShadow color="#004fe3" height="1.0" offsetX="1.0" offsetY="1.0" radius="0.0" width="1.0" />
                                  </effect></ChoiceBox>
                               <ChoiceBox fx:id="parity2" prefWidth="150.0">
                                  <effect>
-                                    <DropShadow color="#004fe3" height="1.0" offsetX="2.0" offsetY="2.0" radius="0.0" width="1.0" />
+                                    <DropShadow color="#004fe3" height="1.0" offsetX="1.0" offsetY="1.0" radius="0.0" width="1.0" />
                                  </effect></ChoiceBox>
                            </children>
                         </HBox>
+                        <Label text="Solve Interval" textFill="#7c7c7c" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+                        <Label text="Timer Delay" textFill="#7c7c7c" GridPane.columnIndex="3" GridPane.rowIndex="6" />
+                        <ChoiceBox fx:id="timerIntervalTextField" prefWidth="150.0" GridPane.columnIndex="4" GridPane.rowIndex="5">
+                           <effect>
+                              <DropShadow color="#004fe3" height="1.0" offsetX="1.0" offsetY="1.0" radius="0.0" width="1.0" />
+                           </effect>
+                        </ChoiceBox>
+                        <ChoiceBox fx:id="timerDelayTextField" prefWidth="150.0" GridPane.columnIndex="4" GridPane.rowIndex="6">
+                           <effect>
+                              <DropShadow color="#004fe3" height="1.0" offsetX="1.0" offsetY="1.0" radius="0.0" width="1.0" />
+                           </effect>
+                        </ChoiceBox>
+                        <Label text="Graph" GridPane.columnIndex="6" GridPane.halignment="CENTER">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                           <padding>
+                              <Insets top="10.0" />
+                           </padding>
+                        </Label>
                      </children>
                      <VBox.margin>
                         <Insets right="20.0" />

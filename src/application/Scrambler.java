@@ -3,7 +3,7 @@ package application;
 import java.util.Random;
 
 public class Scrambler {
-	static int length = 19;
+	static int length = 100; //19
 	static String[][] moves = {{"U", "U'", "U2", "D", "D'", "D2"},
 	                        {"R", "R'", "R2", "L", "L'", "L2"},
 	                        {"F", "F'", "F2", "B", "B'", "B2"}};

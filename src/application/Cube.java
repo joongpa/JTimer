@@ -2,12 +2,16 @@ package application;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.IntStream;
+
+import net.gnehzr.tnoodle.puzzle.NoInspectionThreeByThreeCubePuzzle;
+import net.gnehzr.tnoodle.scrambles.Puzzle;
 
 class Sides {
 	static final int YEL = 0;
@@ -34,12 +38,63 @@ public class Cube {
 	int[] edgeBuffer;
 	int[][] parityEdges;
 	
+	static Cubie[][][] solvedArray;
+	
+	static {
+		solvedArray = new Cubie[3][3][3];
+		
+		for(int i = 0; i < 3; i++) {
+			for(int j = 0; j < 3; j++) {
+				for(int k = 0; k < 3; k++) {
+					if(i % 2 == 0 && j % 2 == 0 && k % 2 == 0) {
+						solvedArray[i][j][k] = new Corner(new int[] {i,j,k});
+					}
+					else if(((i%2) + (j%2) + (k%2)) > 1)
+						continue;
+					else
+						solvedArray[i][j][k] = new Edge(new int[] {i,j,k});
+				}
+			}
+		}
+		
+		// U layer corners
+        solvedArray[0][0][0].colors = new int[] {Sides.YEL, Sides.RED, Sides.GRE};
+        solvedArray[0][0][2].colors = new int[] {Sides.YEL, Sides.RED, Sides.BLU};
+        solvedArray[0][2][0].colors = new int[] {Sides.YEL, Sides.ORA, Sides.GRE};
+        solvedArray[0][2][2].colors = new int[] {Sides.YEL, Sides.ORA, Sides.BLU};
+
+        // D layer corners
+        solvedArray[2][0][0].colors = new int[] {Sides.WHI, Sides.RED, Sides.GRE};
+        solvedArray[2][0][2].colors = new int[] {Sides.WHI, Sides.RED, Sides.BLU};
+        solvedArray[2][2][0].colors = new int[] {Sides.WHI, Sides.ORA, Sides.GRE};
+        solvedArray[2][2][2].colors = new int[] {Sides.WHI, Sides.ORA, Sides.BLU};
+
+        // U layer edges
+        solvedArray[0][0][1].colors = new int[] {Sides.YEL, Sides.RED};
+        solvedArray[0][1][0].colors = new int[] {Sides.YEL, Sides.GRE};
+        solvedArray[0][1][2].colors = new int[] {Sides.YEL, Sides.BLU};
+        solvedArray[0][2][1].colors = new int[] {Sides.YEL, Sides.ORA};
+
+        // E layer edges
+        solvedArray[1][0][0].colors = new int[] {Sides.RED, Sides.GRE};
+        solvedArray[1][0][2].colors = new int[] {Sides.RED, Sides.BLU};
+        solvedArray[1][2][0].colors = new int[] {Sides.ORA, Sides.GRE};
+        solvedArray[1][2][2].colors = new int[] {Sides.ORA, Sides.BLU};
+
+        // D layer edges
+        solvedArray[2][0][1].colors = new int[] {Sides.WHI, Sides.RED};
+        solvedArray[2][1][0].colors = new int[] {Sides.WHI, Sides.GRE};
+        solvedArray[2][1][2].colors = new int[] {Sides.WHI, Sides.BLU};
+        solvedArray[2][2][1].colors = new int[] {Sides.WHI, Sides.ORA};
+	}
+	
 	Cubie[][][] cubieArray;
 	HashSet<Cubie> tracedCorners;
 	HashSet<Cubie> tracedEdges;
 	HashSet<Corner> twists;
 	HashSet<Edge> flips;
 	boolean parity;
+	ArrayList<String> rotationOrder = new ArrayList<String>();
 	
 	int[] rotations = {0,0,0};
 	
@@ -74,6 +129,8 @@ public class Cube {
 				}
 			}
 		}
+		
+		
 	}
 	
 	private void initCubeColors() {
@@ -974,19 +1031,23 @@ public class Cube {
 		
 		int[] temp = rotations.clone();
 		
-		if(temp[0] != 0) {
-			if(temp[0] < 0) {
-				for(int i = 0; i > temp[0]; i--) x();
-			} else {
-				for(int i = 0; i < temp[0]; i++) xi();
-			}
-		}
-		
 		if(temp[1] != 0) {
 			if(temp[1] < 0) {
 				for(int i = 0; i > temp[1]; i--) y();
 			} else {
-				for(int i = 0; i < temp[1]; i++) yi();
+				for(int i = 0; i < temp[1]; i++) {
+					yi();
+				}
+			}
+		}
+		
+		if(temp[0] != 0) {
+			if(temp[0] < 0) {
+				for(int i = 0; i > temp[0]; i--) x();
+			} else {
+				for(int i = 0; i < temp[0]; i++) {
+					xi();
+				}
 			}
 		}
 		
@@ -1036,6 +1097,20 @@ public class Cube {
 		return null;
 	}
 	
+	private int[] getCurrentPosition(int[] position) {
+		for(int i = 0; i < 3; i++) {
+			for(int j = 0; j < 3; j++) {
+				for(int k = 0; k < 3; k++) {
+					if(cubieArray[i][j][k] == null) continue;
+					if(Arrays.equals(cubieArray[i][j][k].position, position)) {
+						return new int[] {i,j,k};
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
 	@Override
 	public String toString() {
 		String output = "";
@@ -1064,18 +1139,31 @@ public class Cube {
 	
 	public int getAlgCount() {
 		if(parity) {
-			if(Arrays.equals(parityEdges[0], edgeBuffer))
+			/*if(Arrays.equals(parityEdges[0], edgeBuffer))
 				edgeBuffer = parityEdges[1];
 			else if(Arrays.equals(parityEdges[1], edgeBuffer))
 				edgeBuffer = parityEdges[0];
 			Cubie temp = cubieArray[0][2][1];
 			cubieArray[0][2][1] = cubieArray[0][1][2];
 			cubieArray[0][1][2] = temp;
+			*/
+			int[] array1 = getCurrentPosition(parityEdges[0]);
+			int[] array2 = getCurrentPosition(parityEdges[1]);
+			
+			Cubie temp = cubieArray[array1[0]][array1[1]][array1[2]];
+			cubieArray[array1[0]][array1[1]][array1[2]] = cubieArray[array2[0]][array2[1]][array2[2]];
+			cubieArray[array2[0]][array2[1]][array2[2]] = temp;
+			
+			//add orientation swapping later
 		}
 		findSolvedPieces();		
 		checkNumTwists();
 		int cornerTargets = trace(cornerBuffer, tracedCorners);
 		int edgeTargets = trace(edgeBuffer, tracedEdges);
+		
+		//int cornerTargets = traceWithFloating(cornerBuffer, tracedCorners);
+		//int edgeTargets = traceWithFloating(edgeBuffer, tracedEdges);
+		
 		int edgeAlgs = (int)Math.ceil((double)edgeTargets / 2);
 		int cornerAlgs = (int)(Math.ceil((double)cornerTargets / 2));
 		int algs = edgeAlgs + cornerAlgs + numTwistAlgs() + numFlipAlgs();
@@ -1158,10 +1246,10 @@ public class Cube {
 		int pieceCount = (buffer instanceof Corner) ? 8 : 12;
 		int side = Sides.TOP;
 		int counter = 0;
-		
+
 		while(tracedPieces.size() < pieceCount) {
 			//System.out.println(buffer);
-			Cubie temp = retrieveNextPiece(buffer, side);
+			Cubie temp = retrieveNextPiece(buffer);
 			if(!tracedPieces.contains(temp)) {
 				tracedPieces.add(temp);
 				counter++;
@@ -1183,7 +1271,83 @@ public class Cube {
 		return counter;
 	}
 	
-	public Cubie retrieveNextPiece(Cubie cubie, int sticker) {
+	//TEMPORARY METHOD ONLY
+	public int traceWithFloating(int[] passedBuffer, HashSet<Cubie> tracedPieces) {
+		Cubie buffer = cubieArray[passedBuffer[0]][passedBuffer[1]][passedBuffer[2]];
+		int[] bufferLocation = passedBuffer;
+		Class<? extends Cubie> pieceType = buffer.getClass();
+		int pieceCount = (buffer instanceof Corner) ? 8 : 12;
+		int side = Sides.TOP;
+		int counter = 0;
+		
+		int badCycles = 0;
+		int cycleLength = 0;
+		int startingColor = Sides.YEL; //temporary
+		//if(isSolved(buffer) && buffer.isTwisted()) counter += 2;
+		int oddCycles = 0;
+		
+		while(tracedPieces.size() < pieceCount) {
+			System.out.print(buffer);
+
+			Cubie temp = retrieveNextPiece(buffer);
+			if(!tracedPieces.contains(temp)) {
+				tracedPieces.add(temp);
+				counter++;
+				cycleLength++;
+			}
+			System.out.println(" " + counter);
+			side = getNewSide(buffer, side);
+			buffer = temp;
+			
+			if(Arrays.equals(temp.position, bufferLocation)) {
+				tracedPieces.add(cubieArray[bufferLocation[0]][bufferLocation[1]][bufferLocation[2]]);
+				System.out.println(Cubie.colorFromNum(buffer.colors[side]) + " vs " + Cubie.colorFromNum(startingColor));
+				
+				if(cycleLength % 2 != 0) oddCycles++;
+				
+				if(startingColor != buffer.colors[side]) {
+					badCycles++;
+					/*if(twists.size() == 0 && pieceCount == 8) {
+						counter += 2;
+					} else if(flips.size() % 2 == 0 && pieceCount == 12) {
+						counter += 2;
+					}*/
+				}
+				
+				if(tracedPieces.size() < pieceCount) {
+					
+					
+					
+					cycleLength = 0;
+					
+					buffer = breakCycle(pieceType); //eh maybe won't work
+					//System.out.println("new buffer " + buffer);
+					bufferLocation = getIndex(buffer); //might not work idk lol
+					
+					side = Sides.TOP;
+					//int scs = (cubieArray[array1[0]][array1[1]][array1[2]].isTwisted()) ? Sides.FRONT : Sides.TOP;
+					startingColor = solvedArray[bufferLocation[0]][bufferLocation[1]][bufferLocation[2]].colors[side];
+				}
+			}
+		}
+		//Cubie ff = cubieArray[passedBuffer[0]][passedBuffer[1]][passedBuffer[2]];
+		//if(ff.isTwisted() && isSolved(ff)) {
+		//	counter += 2;
+		//}
+		if(badCycles % 2 != 0 && flips.size() % 2 == 0 && pieceCount == 12) {
+			counter += 2;
+		}
+		else if(badCycles % 2 != 0 && twists.size() == 0 && pieceCount == 8) {
+			counter += 2;
+		}
+		System.out.println(badCycles + " " + oddCycles);
+		badCycles = Math.max(badCycles - (badCycles % 2) - (oddCycles - (oddCycles % 2)), 0);
+		counter += badCycles - (badCycles % 2);
+		counter += oddCycles - (oddCycles % 2);
+		return counter;
+	}
+	
+	public Cubie retrieveNextPiece(Cubie cubie) {
 		int[] position = cubie.position;
 		Cubie nextCubie = cubieArray[position[0]][position[1]][position[2]];
 		return nextCubie;
@@ -1212,19 +1376,24 @@ public class Cube {
 	}
 	
 	public static void main(String[] args) throws FileNotFoundException {
-		//test();
-		int[] cornerBuffer = {0,2,2};
+		test();
+		/*int[] cornerBuffer = {0,2,2};
 		int[] edgeBuffer = {0,2,1};
 		int[] thing = {0,1,2};
 		Cube cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer, thing);
-		cube.scrambleCube("L2 D2 B' L2 F D2 B2 L2 R2 B' D2 L2 R' D' L B' D' L' U' F2 Fw");
-		System.out.println(cube.getAlgCount());
+		//cube.scrambleCube("F2 L2 F L U' B' D L2 U F' L' U2 B2 D2 F R' B' U F2 D L D2 B R' D' B2 L B' L2 D2 Fw Uw2");
+		//cube.scrambleCube("F2 L F2 U' R U2 B' U' R' B2 L B U2 F' L B D L D B' D B D F' R B' L F2 D B' Fw Uw");
+		//cube.scrambleCube("R' B2 D L D2 F' L U B2 U' F' U' F D2 L' F D' R D R2 B U2 L2 B2 L2 F D2 L' D L Fw Uw2");
+		cube.scrambleCube("B' D2 B U' R F' D B' D2 R2 F U B R' U F D2 B2 R2 D B' U' F' L2 F' R U' L2 U2 F Fw' Uw2");
+		//cube.scrambleCube("R' B2 R D2 R B D' R2 D' F2 R' B D' L F D2 L D B2 R' B2 U' L2 D2 F2 L U R2 U B Rw Uw2");
+		System.out.println(cube.getAlgCount());*/
 	}
 	
 	public static void test() throws FileNotFoundException {
 		double startTime = System.currentTimeMillis();
 
 		HashMap<Integer, Integer> distro = new HashMap<>();
+		distro.put(5, 0);
 		distro.put(6, 0);
 		distro.put(7, 0);
 		distro.put(8, 0);
@@ -1234,6 +1403,7 @@ public class Cube {
 		distro.put(12, 0);
 		distro.put(13, 0);
 		distro.put(14, 0);
+		distro.put(15, 0);
 		
 		int count = 0;
 		int total = 0;
@@ -1243,12 +1413,13 @@ public class Cube {
 		Cube cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer, thing);
 		File file = new File("C:\\Users\\Jeff Park\\PycharmProjects\\Cubing\\Scrambles.txt");
 		Scanner sc = new Scanner(file);
-		while(sc.hasNext()) {
-			String scramble = sc.nextLine();
+		//while(sc.hasNext()) {
+		for(int i = 0; i < 100; i++) {
+			//String scramble = sc.nextLine();
+			String scramble = Scrambler.genScramble();
 			cube.scrambleCube(scramble);
 			int algs = cube.getAlgCount();
 			
-			if(algs == 13) System.out.println(scramble);
 			distro.put(algs, distro.get(algs) + 1);
 			total += algs;
 			cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer.clone(), thing);
@@ -1259,7 +1430,7 @@ public class Cube {
 		for(Map.Entry<Integer, Integer> entry : distro.entrySet()) {
 			System.out.println(entry.getKey() + ": " + entry.getValue());
 		}
-		System.out.println(((double)total)/count);
-		System.out.println((System.currentTimeMillis() - startTime) / 1000);
+		System.out.println("Average: " + ((double)total)/count);
+		System.out.println("Total time: " + (System.currentTimeMillis() - startTime) / 1000);
 	}
 }
