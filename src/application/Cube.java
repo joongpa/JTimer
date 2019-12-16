@@ -1131,7 +1131,7 @@ public class Cube {
 	public void setParity(String[] moves) {
 		int count = (int)IntStream.range(0, moves.length)
 							 .filter(i -> !moves[i].contains(")"))
-							 //.filter(i -> !moves[i].contains("w"))
+							 //.filter(i -> !moves[i].contains("w")) //remove after testing
 							 .filter(i -> !moves[i].contains("2"))
 							 .count();
 		parity = count % 2 != 0;
@@ -1139,14 +1139,6 @@ public class Cube {
 	
 	public int getAlgCount() {
 		if(parity) {
-			/*if(Arrays.equals(parityEdges[0], edgeBuffer))
-				edgeBuffer = parityEdges[1];
-			else if(Arrays.equals(parityEdges[1], edgeBuffer))
-				edgeBuffer = parityEdges[0];
-			Cubie temp = cubieArray[0][2][1];
-			cubieArray[0][2][1] = cubieArray[0][1][2];
-			cubieArray[0][1][2] = temp;
-			*/
 			int[] array1 = getCurrentPosition(parityEdges[0]);
 			int[] array2 = getCurrentPosition(parityEdges[1]);
 			
@@ -1154,7 +1146,13 @@ public class Cube {
 			cubieArray[array1[0]][array1[1]][array1[2]] = cubieArray[array2[0]][array2[1]][array2[2]];
 			cubieArray[array2[0]][array2[1]][array2[2]] = temp;
 			
-			//add orientation swapping later
+			Cubie edge1 = cubieArray[array1[0]][array1[1]][array1[2]];
+			Cubie edge2 = cubieArray[array2[0]][array2[1]][array2[2]];
+			
+			if(edge1.isTwisted() != edge2.isTwisted()) {
+				edge1.colors = new int[] {edge1.colors[1], edge2.colors[0]};
+				edge2.colors = new int[] {edge2.colors[1], edge2.colors[0]};
+			}
 		}
 		findSolvedPieces();		
 		checkNumTwists();
@@ -1206,17 +1204,7 @@ public class Cube {
 		}
 		for(Cubie edge : tracedEdges) {
 			if(isSolved(edge) && edge.isTwisted()) {
-				if(parity) {
-					if(Arrays.equals(edge.position, parityEdges[1])) //add another if condition for parity edges[0]
-					//if(Arrays.equals(edgeBuffer, parityEdges[1]))
-						continue;
-					//if(Arrays.equals(edgeBuffer, parityEdges[0]))
-					//	continue;
-				} else {
-					if(Arrays.equals(edge.position, parityEdges[0])) //possibly replace parityEdges[0] with buffer position
-					//if(Arrays.equals(edge.position, edgeBuffer))
-						continue;
-				}
+				if(Arrays.equals(edge.position, edgeBuffer)) continue;
 				flips.add((Edge)edge);
 			}
 		}
@@ -1376,17 +1364,19 @@ public class Cube {
 	}
 	
 	public static void main(String[] args) throws FileNotFoundException {
-		test();
-		/*int[] cornerBuffer = {0,2,2};
+		//test();
+		int[] cornerBuffer = {0,2,2};
 		int[] edgeBuffer = {0,2,1};
 		int[] thing = {0,1,2};
 		Cube cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer, thing);
 		//cube.scrambleCube("F2 L2 F L U' B' D L2 U F' L' U2 B2 D2 F R' B' U F2 D L D2 B R' D' B2 L B' L2 D2 Fw Uw2");
 		//cube.scrambleCube("F2 L F2 U' R U2 B' U' R' B2 L B U2 F' L B D L D B' D B D F' R B' L F2 D B' Fw Uw");
 		//cube.scrambleCube("R' B2 D L D2 F' L U B2 U' F' U' F D2 L' F D' R D R2 B U2 L2 B2 L2 F D2 L' D L Fw Uw2");
-		cube.scrambleCube("B' D2 B U' R F' D B' D2 R2 F U B R' U F D2 B2 R2 D B' U' F' L2 F' R U' L2 U2 F Fw' Uw2");
+		//cube.scrambleCube("B' D2 B U' R F' D B' D2 R2 F U B R' U F D2 B2 R2 D B' U' F' L2 F' R U' L2 U2 F Fw' Uw2");
 		//cube.scrambleCube("R' B2 R D2 R B D' R2 D' F2 R' B D' L F D2 L D B2 R' B2 U' L2 D2 F2 L U R2 U B Rw Uw2");
-		System.out.println(cube.getAlgCount());*/
+		
+		cube.scrambleCube("B2 U F2 D' U' B2 D' F L2 F2 L2 D' R' F U L B' F Rw2 Uw'");
+		System.out.println(cube.getAlgCount());
 	}
 	
 	public static void test() throws FileNotFoundException {
@@ -1414,12 +1404,11 @@ public class Cube {
 		File file = new File("C:\\Users\\Jeff Park\\PycharmProjects\\Cubing\\Scrambles.txt");
 		Scanner sc = new Scanner(file);
 		//while(sc.hasNext()) {
-		for(int i = 0; i < 100; i++) {
+		for(int i = 0; i < 100000; i++) {
 			//String scramble = sc.nextLine();
 			String scramble = Scrambler.genScramble();
 			cube.scrambleCube(scramble);
 			int algs = cube.getAlgCount();
-			
 			distro.put(algs, distro.get(algs) + 1);
 			total += algs;
 			cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer.clone(), thing);

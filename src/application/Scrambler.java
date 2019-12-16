@@ -19,20 +19,26 @@ public class Scrambler {
 	 * RED: BLU YEL GRE WHI
 	 */
 	
-	public static int getAlgCount(String scramble) {
-		int[] cornerBuffer = {0,2,2};
-		int[] edgeBuffer = {0,2,1};
-		int[] thing = {0,1,2};
-		Cube cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer, thing);
+	public int[] cornerBuffer;
+	public int[] edgeBuffer;
+	public int[] parityEdge1;
+	public int[] parityEdge2;
+	
+	public Scrambler(int[] cornerBuffer, int[] edgeBuffer, int[] parityEdge1, int[] parityEdge2) {
+		this.cornerBuffer = cornerBuffer;
+		this.edgeBuffer = edgeBuffer;
+		this.parityEdge1 = parityEdge1;
+		this.parityEdge2 = parityEdge2;
+	}
+	
+	public int getAlgCount(String scramble) {
+		Cube cube = new Cube(cornerBuffer, edgeBuffer, parityEdge1, parityEdge2);
 		cube.scrambleCube(scramble);
 		return cube.getAlgCount();
 	}
 	
-	public static String genScramble(int algCount) {
-		int[] cornerBuffer = {0,2,2};
-		int[] edgeBuffer = {0,2,1};
-		int[] thing = {0,1,2};
-		Cube cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer, thing);
+	public String genScramble(int algCount) {;
+		Cube cube = new Cube(cornerBuffer, edgeBuffer, parityEdge1, parityEdge2);
 		
 		SimpleTimer st = new SimpleTimer();
 		st.start();
@@ -45,7 +51,7 @@ public class Scrambler {
 				return scramble;
 			}
 			if(st.getTime() > 10.0) break;
-			cube = new Cube(cornerBuffer, edgeBuffer, edgeBuffer, thing);
+			cube = new Cube(cornerBuffer, edgeBuffer, parityEdge1, parityEdge2);
 		}
 		return null;
 	}

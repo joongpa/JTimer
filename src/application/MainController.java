@@ -19,6 +19,7 @@ package application;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.IntSummaryStatistics;
 import java.util.ResourceBundle;
 
@@ -56,6 +57,8 @@ import net.gnehzr.tnoodle.scrambles.Puzzle;
 public class MainController implements Initializable{
 	
 	private Popup popup;
+	
+	HashMap<String, int[]> bufferMap;
 	
 	@FXML private BarChart<String, Integer> barChart;
 	@FXML private CategoryAxis xAxis;
@@ -109,9 +112,6 @@ public class MainController implements Initializable{
 	private KeyCombination okCombo = new KeyCodeCombination(KeyCode.DIGIT1, KeyCodeCombination.CONTROL_DOWN);
 	private KeyCombination plus2Combo = new KeyCodeCombination(KeyCode.DIGIT2, KeyCodeCombination.CONTROL_DOWN);
 	private KeyCombination dnfCombo = new KeyCodeCombination(KeyCode.DIGIT3, KeyCodeCombination.CONTROL_DOWN);
-	private KeyCombination upCombo = new KeyCodeCombination(KeyCode.UP);
-	private KeyCombination downCombo = new KeyCodeCombination(KeyCode.DOWN);
-	private KeyCombination enterCombo = new KeyCodeCombination(KeyCode.ENTER);
 	
 	double delayTime = -5;
 	int intervalTime = 0;
@@ -126,10 +126,37 @@ public class MainController implements Initializable{
 	int currentAlgCount;
 	
 	Puzzle puzzle = new NoInspectionThreeByThreeCubePuzzle();
+	
+	int[] cornerBuffer = {0,2,2};
+	int[] edgeBuffer = {0,2,1};
+	int[] thing = {0,1,2};
+	Scrambler scrambler = new Scrambler(cornerBuffer, edgeBuffer, edgeBuffer, thing);
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 	
+		bufferMap = new HashMap<>();
+		bufferMap.put("UBL", new int[] {0,0,0});
+		bufferMap.put("UBR", new int[] {0,0,2});
+		bufferMap.put("UFR", new int[] {0,2,2});
+		bufferMap.put("UFL", new int[] {0,2,0});
+		bufferMap.put("DFR", new int[] {2,2,2});
+		bufferMap.put("DFL", new int[] {2,2,0});
+		bufferMap.put("DBR", new int[] {2,0,2});
+		bufferMap.put("DBL", new int[] {2,0,0});
+		bufferMap.put("UB", new int[] {0,0,1});
+		bufferMap.put("UR", new int[] {0,1,2});
+		bufferMap.put("UF", new int[] {0,2,1});
+		bufferMap.put("UL", new int[] {0,1,0});
+		bufferMap.put("DF", new int[] {2,2,1});
+		bufferMap.put("DR", new int[] {2,1,2});
+		bufferMap.put("DB", new int[] {2,0,1});
+		bufferMap.put("DL", new int[] {2,1,0});
+		bufferMap.put("FR", new int[] {1,2,2});
+		bufferMap.put("FL", new int[] {1,2,0});
+		bufferMap.put("BR", new int[] {1,0,2});
+		bufferMap.put("BL", new int[] {1,0,0});
+		
 		series = new XYChart.Series<>();
 		xAxis.setCategories(FXCollections.<String>observableArrayList(Arrays.asList("8", "9", "10", "11", "12")));
 		
@@ -139,13 +166,18 @@ public class MainController implements Initializable{
 		parity1.getItems().addAll(FXCollections.observableArrayList(edgeBufferOptions));
 		parity2.getItems().addAll(FXCollections.observableArrayList(edgeBufferOptions));
 		
+		cornerBufferChoiceBox.getSelectionModel().select(1);
+		edgeBufferChoiceBox.getSelectionModel().select(0);
+		parity1.getSelectionModel().select(0);
+		parity2.getSelectionModel().select(2);
+		
 		timerDelayTextField.getItems().addAll(FXCollections.observableArrayList(delayOptions));
 		timerDelayTextField.getSelectionModel().clearAndSelect(0);
 		timerIntervalTextField.getItems().addAll(FXCollections.observableArrayList(intervalOptions));
 		timerIntervalTextField.getSelectionModel().clearAndSelect(0);
 		algCount.getSelectionModel().clearAndSelect(0);
 		
-		currentAlgCount = setScramble();
+		setScramble();
 		popup = newPopup();
 
 		solveNumber.setCellValueFactory(new PropertyValueFactory<Solve, Integer>("solveNumber"));
@@ -234,7 +266,7 @@ public class MainController implements Initializable{
 					timeList.getItems().add(new Solve(largestIndex + 1, st.getTime(), scrambleText.getText(), currentAlgCount));
 					timeList.getSelectionModel().select(largestIndex, solveNumber);
 					timeList.scrollTo(largestIndex);
-			        currentAlgCount = setScramble();
+			        setScramble();
 			        setSessionStats();
 			        st.stop();
 			        lockout.set(true);
@@ -316,29 +348,8 @@ public class MainController implements Initializable{
 			if(dnfCombo.match(e)) dnf();
 		});
 		
-		root.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-			if(upCombo.match(e))
-			{
-				try
-				{
-					timeList.getSelectionModel().select(timeList.getSelectionModel().getSelectedIndex() - 1);
-					
-				} catch (IndexOutOfBoundsException error) {}
-			}
-		});
-		
-		root.addEventFilter(KeyEvent.KEY_PRESSED, e -> {
-			if(downCombo.match(e))
-			{
-				try
-				{
-					timeList.getSelectionModel().select(timeList.getSelectionModel().getSelectedIndex() + 1);
-				} catch (IndexOutOfBoundsException error) {}
-			}
-		});
-		
 		algCount.getSelectionModel().selectedItemProperty().addListener((o, oldvalue, newValue) -> {
-			currentAlgCount = setScramble();
+			setScramble();
 		});
 		
 		timerDelayTextField.getSelectionModel().selectedItemProperty().addListener((o, oldvalue, newValue) -> {
@@ -350,10 +361,31 @@ public class MainController implements Initializable{
 			intervalTime = Integer.valueOf(newValue);
 			interval.setStartTime(intervalTime);
 		});
-		
+	
 		timeList.getSelectionModel().selectedItemProperty().addListener((o, oldvalue, newValue) -> {
-			algDisplay.setText(String.valueOf(newValue.numAlgs));
+			if(newValue != null) algDisplay.setText(String.valueOf(newValue.numAlgs));
 		});
+
+		cornerBufferChoiceBox.getSelectionModel().selectedItemProperty().addListener((o, oldvalue, newValue) -> {
+			scrambler.cornerBuffer = bufferMap.get(newValue);
+			setScramble();
+		});
+		
+		edgeBufferChoiceBox.getSelectionModel().selectedItemProperty().addListener((o, oldvalue, newValue) -> {
+			scrambler.edgeBuffer = bufferMap.get(newValue);
+			setScramble();
+		});
+		
+		parity1.getSelectionModel().selectedItemProperty().addListener((o, oldvalue, newValue) -> {
+			scrambler.parityEdge1 = bufferMap.get(newValue);
+			setScramble();
+		});
+		
+		parity2.getSelectionModel().selectedItemProperty().addListener((o, oldvalue, newValue) -> {
+			scrambler.parityEdge2 = bufferMap.get(newValue);
+			setScramble();
+		});
+		
 	}
 	
 	public void clear()
@@ -501,20 +533,20 @@ public class MainController implements Initializable{
 		return button;
 	}
 	
-	private int setScramble()
+	private void setScramble()
 	{
 		int numAlgs = 0;
 		String choice = algCount.getSelectionModel().getSelectedItem();
 		if(choice.equals("Default")) {
 			String scramble = puzzle.generateScramble();
 			scrambleText.setText(scramble);
-	        numAlgs = Scrambler.getAlgCount(scramble);
+	        numAlgs = scrambler.getAlgCount(scramble);
 	            
 		} else {
-			scrambleText.setText(Scrambler.genScramble(Integer.valueOf(choice)));
+			scrambleText.setText(scrambler.genScramble(Integer.valueOf(choice)));
 			numAlgs = Integer.valueOf(choice);
 		}
-		return numAlgs;
+		currentAlgCount = numAlgs;
 	}
 	
 	public void setSessionStats()
@@ -594,7 +626,8 @@ public class MainController implements Initializable{
 	}
 	
 	public void setAlgAccuracy(Solve[] solveList) {
-		
+		barChart.getData().clear();
+		series.getData().clear();
 		double[] algAverages = new double[xAxis.getCategories().size()]; 
 		for(int i = 0; i < algAverages.length; i++) {
 			algAverages[i] = getAlgAverage(i + 8, solveList);
