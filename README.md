@@ -1,6 +1,7 @@
 Thank you for checking out JTimer! (Will soon be renamed to 3BOT)
 
 Project Overview
+
 The folder “src/application” contains various files that form the core timer program. The most notable are as follows:
 - Main.java	-	Responsible for launching the application
 - MainController.java	-	Holds the core logic of the timer
