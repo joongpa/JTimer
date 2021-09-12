@@ -1,4 +1,4 @@
-Thank you for checking out JTimer! (Will soon be renamed to 3BOT)
+Thank you for checking out JTimer!
 
 Project Overview
 
